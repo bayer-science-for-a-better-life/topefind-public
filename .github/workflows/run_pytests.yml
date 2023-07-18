@@ -1,0 +1,111 @@
+name: topefind_ci
+
+on: [ push ]
+
+# Restrict permissions for CI jobs.
+permissions:
+  contents: read
+
+jobs:
+  full-setup:
+    name: pytest ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -el {0}
+    strategy:
+      max-parallel: 5
+      fail-fast: false
+      # Just for now let's stick to one.
+      matrix:
+        os: [ "ubuntu-latest" ]
+        python-version: [ "3.10" ]
+        include:
+          - os: ubuntu-latest
+            environment-file: environment.yml
+            miniforge-variant: Mambaforge
+            miniforge-version: latest
+
+    steps:
+      - name: Checkout topefind
+        uses: actions/checkout@v2
+
+      - name: Create environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          condarc-file: ${{ matrix.condarc-file }}
+          miniforge-variant: ${{ matrix.miniforge-variant }}
+          miniforge-version: ${{ matrix.miniforge-version }}
+          auto-activate-base: false
+          activate-environment: topefind
+          use-mamba: true
+
+      - name: Get date
+        id: get-date
+        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Cache conda environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CONDA }}/envs
+          key:
+            conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}
+            -${{ hashFiles('etc/example-environment-caching.yml') }}-${{ env.CACHE_NUMBER }}
+        env:
+          # Increase this to reset cache if environment.yml has not changed
+          CACHE_NUMBER: 0
+        id: cache
+
+      - name: Update environment
+        run:
+          mamba env update -n topefind -f ${{ matrix.environment-file }}
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Testing
+        run: pytest --cov=./ --cov-report=xml
+
+      - name: Test badge failing
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        if: ${{ failure() }}
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: b2aeb651993f9dd7882c325a96c9c85f
+          filename: test_topefind.json
+          label: Testing
+          message: Failed
+          color: red
+
+      - name: Test badge passing
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        if: ${{ success() }}
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: be97eb90840a566980c59d00f26d9cd2
+          filename: test_topefind.json
+          label: Testing
+          message: Passed
+          color: "#4cc727"
+
+      - name: Get coverage
+        id: coverage
+        run: |
+          RATE=$(xmllint coverage.xml --xpath 'string(/coverage/@line-rate)')
+          RATE_PERCENT=$(awk "BEGIN {printf \"%.2f\", $RATE*100}")
+          echo "COV=$RATE_PERCENT" >> "$GITHUB_ENV"
+
+      - name: Coverage badge
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: c4dc7ff205bbd6478f94462a864d5a83
+          filename: coverage_topefind.json
+          label: Coverage
+          message: ${{ env.COV }}%
+          valColorRange: ${{ env.COV }}
+          minColorRange: 20
+          maxColorRange: 100
+
+      - name: Assess failing
+        if: ${{ failure() }}
+        run: exit 1

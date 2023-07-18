@@ -1,0 +1,36 @@
+name: topefind
+channels:
+  - conda-forge
+  - bioconda
+  - sdvillal
+dependencies:
+  # TODO: remove unnecessary dependencies
+  - python>=3.10
+  - transformers
+  - sentencepiece
+  - protobuf
+  - scikit-learn
+  - pytorch
+  - numpy
+  - polars<=0.16.10
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - plotly
+  - tqdm
+  - anarci
+  - einops
+  - biotite
+  - panel<=0.14.4
+  - python-kaleido
+  - tabulate
+  - backports
+  - requests
+  # Development dependencies
+  - pytest
+  - pytest-cov
+  - ruff
+
+  - pip:
+      - "-e ."

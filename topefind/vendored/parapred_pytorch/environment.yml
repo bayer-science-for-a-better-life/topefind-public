@@ -1,0 +1,9 @@
+name: parapred-pytorch
+channels:
+    - defaults
+    - pytorch
+    - anaconda
+dependencies:
+    - python=3.8
+    - pytorch==1.7.0
+    - click==7.1.2

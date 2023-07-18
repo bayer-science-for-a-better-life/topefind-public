@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "topefind"
+version = "0.0.1"
+authors = [{ name = "Cristian Tudosie", email = "cristian.tudosie@bayer.com" }]
+description = "Finding the interacting residues in antibodies with machine learning"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Utilities",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/bayer-science-for-a-better-life/topefind"
+"Bug Tracker" = "https://github.com/bayer-science-for-a-better-life/topefind/issues"
+"Source" = "https://github.com/bayer-science-for-a-better-life/topefind"
+
+[tool.setuptools.packages.find]
+where = ["topefind"]
+
+[tool.ruff]
+# Enable the pycodestyle (`E`) and Pyflakes (`F`) rules by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["E", "F"]
+ignore = []
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+exclude = [
+    ".git",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "**/vendored/",
+]
+per-file-ignores = { }
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+target-version = "py310"
+line-length = 120
+show-source = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "-v",
+    "-ra",
+    "--cov",
+    "--cov-report=term-missing",
+    "--ignore=topefind/vendored/",
+    "--ignore=topefind/exploration/",
+    "--ignore=examples/",
+    "--ignore=models/",
+]
