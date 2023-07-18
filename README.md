@@ -36,12 +36,12 @@ ESM2 650M + RF Transfer Learning
 </td>  
 <td>
 
-<img height="300" alt="image" src="https://github.com/bayer-science-for-a-better-life/topefind-public/assets/28055473/e08c8813-c305-4f9c-b69e-7eb21c4ac0bd)">
+<img height="300" alt="image" src="https://github.com/bayer-science-for-a-better-life/topefind-public/assets/28055473/89e71f65-183f-4ecb-9df8-3a56bfd9b68e">
 
 </td>
 <td>
 
-<img height="300" alt="image" src="https://github.com/bayer-science-for-a-better-life/topefind-public/assets/28055473/6f186ec6-6ccf-401a-95c8-10e3b96cd51b">
+<img height="300" alt="image" src="https://github.com/bayer-science-for-a-better-life/topefind-public/assets/28055473/2fef9056-a8b7-4c08-bbfd-e43d7293bb69">
 
 </td>
 </tr>
