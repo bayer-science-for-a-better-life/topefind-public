@@ -1,36 +1,49 @@
 name: topefind
+
 channels:
   - conda-forge
   - bioconda
   - sdvillal
+
 dependencies:
-  # TODO: remove unnecessary dependencies
+  # General
   - python>=3.10
+  - backports
+  - requests
+  - tqdm
+
+  # Development
+  - pytest
+  - pytest-cov
+  - ruff
+
+  # Machine Learning
   - transformers
   - sentencepiece
   - protobuf
   - scikit-learn
   - pytorch
   - numpy
+  - scipy
+  - einops
+
+  # Data Related
   - polars<=0.16.10
   - pandas
-  - scipy
+
+  # Bioinformatics
+  - biotite
+  # Do not update this until this ANARCI bug is fixed:
+  # https://github.com/oxpig/ANARCI/issues/17
+  - anarci==2020.04.23
+
+  # Visualizations
+  - tabulate
   - matplotlib
   - seaborn
   - plotly
-  - tqdm
-  - anarci
-  - einops
-  - biotite
-  - panel<=0.14.4
   - python-kaleido
-  - tabulate
-  - backports
-  - requests
-  # Development dependencies
-  - pytest
-  - pytest-cov
-  - ruff
+  - panel<=0.14.4
 
   - pip:
       - "-e ."
