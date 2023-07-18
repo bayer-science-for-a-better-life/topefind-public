@@ -443,5 +443,5 @@ with $j \in [0, \dots m - 1]$.
 
 # Acknowledgements
 
-Build with love ❤️ by Serban Cristian Tudosie during an internship at Bayer 🧬.  
+Built with love ❤️ by Serban Cristian Tudosie during an internship at Bayer 🧬.  
 Several more people have contributed: Santiago Villalba, Pedro Reis, Adrien Bitton, Sven Giese.
