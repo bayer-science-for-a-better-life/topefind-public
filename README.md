@@ -3,7 +3,6 @@
 [![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/CrisSherban/c4dc7ff205bbd6478f94462a864d5a83/raw/coverage_topefind_public.json)](https://github.com/bayer-science-for-a-better-life/topefind-public/actions)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-
 Antibodies are particular Y-shaped proteins. They are one of the most essential
 parts of the adaptive immune system since they interact with antigens. Being
 able to engineer antibodies can significantly impact the production of therapeutics,
@@ -63,9 +62,10 @@ ESM2 650M + RF Transfer Learning
 
 * [Installation](#installation)
 * [Motivation](#motivation)
-* [Available Models](#available-models)
-* [Usage](#usage)
 * [Dashboard](#dashboard)
+* [Models](#models)
+* [Literature Datasets Summary](#literature-datasets-summary)
+* [Usage](#usage)
 * [Vendored](#vendored)
 
 # Installation
@@ -327,13 +327,33 @@ Some relevant models from the literature are reported for comparison.
 <sup>a</sup> check [Vendored](#vendored)  
 <sup>b</sup> topefind uses parapred-pytorch provided by alchemab. The original version in Keras is provided by eliberis
 and is not
-considered in topefind for inference.  
-
+considered in topefind for inference.
 
 Some relevant models in literature are not included for the following reasons:  
 <sup>c</sup> Weights not available.  
 <sup>d</sup> Weights not available.  
-<sup>e</sup> License not permissive enough.  
+<sup>e</sup> License not permissive enough.
+
+# Literature Datasets Summary
+
+We report some relevant datasets, and a brief summary of the pre-processing done to each one to
+get an overview of the current landscape. For more details check each model's paper reported in [Models](#models).
+
+| Method             |             Reported PR AUC             | Dataset Availability |  Dataset Size   | Dataset Pre-Processing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|--------------------|:---------------------------------------:|:--------------------:|:---------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| PECAN              |            0.68<sup>a</sup>             |          ✅           |       460       | - Get the dataset from <br/> - Cluster at 95% maximum sequence identity <br/> - Discard complexes with antigens different than protein e.g. DNA                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Paragraph          |            0.70<sup>a</sup>             |          ✅           |       460       | - Get the PECAN dataset.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Paragraph Expanded |            0.73<sup>a</sup>             |          ✅           |      1086       | - Get X-ray structures from SAbDab with a resolution < 3.0 A <br/> - Discard Fvs that contain less than 10 binding residues <br/> - Discard antibodies that have less than 50% of the binding residues in the CDR+2 region <br/> - Cluster at 95% maximum sequence identity with CD-HIT <br/> - Remove structures that ABodyBuilder can not model using 95% identity threshold                                                                                                                                                                                                                                   |
+| Parapred           | 0.65<sup>a</sup> <br/> 0.72<sup>b</sup> |          ✅           |       277       | - Get X-ray structures from SAbDab with a resolution < 3.0 A <br/> - Keep only complexes that contain both heavy and light chains <br/> - Cluster at 95% maximum sequence identity (with CD-HIT)<sup>f</sup>    <br/> - Discard antibodies with < 5 residues in contact with the antigen                                                                                                                                                                                                                                                                                                                         |
+| antiBERTa          |            0.74<sup>b</sup>             |    ⚠️<sup>d</sup>    | 900<sup>c</sup> | - Get X-ray structures from SAbDab with a resolution < 3.0 A <br/> - Identify paratope labels as any residue of the antibody chain that has a heavy atom within 4.5 A of a heavy atom in an antigen chain  <br/> - Include only antibodies with at least one contact in the heavy chain and one in the light chain <br/> - Cluster at 99% maximum sequence identity with CD-HIT <br/> - Perform V-gene hierarchical clustering on antibody chains and remove the clusters with < 3 antibodies <br/> - Within each cluster, bin paratope lengths and remove antibody chains corresponding to bins with < 3 counts |
+
+<sup>a</sup> Reported by Paragraph.  
+<sup>b</sup> Reported by antiBERTa.  
+<sup>c</sup> We use the parapred-pytorch adapted weights.  
+<sup>d</sup> The script to download the dataset for pre-training the antibody LM is given but is not functional. The
+transfer-learning dataset is given but lacks the differentiation between heavy and light chains.  
+<sup>e</sup> Accounts only in this case for the total number of antibody chains and not complexes.  
+<sup>f</sup> Not explicitly stated by Parapred.
 
 # Dashboard
 
@@ -349,13 +369,18 @@ We applied minor modifications to parts of the code to adapt for each use case.
 Please refer to each package for more details.
 
 Additionally, a small part of [panel_chemistry](https://github.com/awesome-panel/panel-chemistry/tree/main)
-and [pdbemolstar](https://github.com/molstar/pdbe-molstar) are vendored for the [`dashboard`](topefind/dashboard).
+is vendored for the [`dashboard`](topefind/dashboard).
+
+
+<!---
 
 # Supplementary Details
 
 ## How are labels computed?
 
 Paratope labels are derived from the interface contact map.
+
+
 
 **Definition: Interface Contact Map**
 
@@ -413,3 +438,10 @@ with $j \in [0, \dots m - 1]$.
 >    \end{bmatrix}
 >```
 >where $k \in \mathbb{N}$ is the number of entities in contact with $\mathbf{A}$.
+
+--->
+
+# Acknowledgements
+
+Build with love ❤️ by Serban Cristian Tudosie during an internship at Bayer 🧬.  
+Several more people have contributed: Santiago Villalba, Pedro Reis, Adrien Bitton, Sven Giese.
