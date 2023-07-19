@@ -3,6 +3,8 @@
 [![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/CrisSherban/c4dc7ff205bbd6478f94462a864d5a83/raw/coverage_topefind_public.json)](https://github.com/bayer-science-for-a-better-life/topefind-public/actions)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+⚠️ This is a temporary public version ⚠️
+
 Antibodies are particular Y-shaped proteins. They are one of the most essential
 parts of the adaptive immune system since they interact with antigens. Being
 able to engineer antibodies can significantly impact the production of therapeutics,
@@ -61,8 +63,8 @@ ESM2 650M + RF Transfer Learning
 # Table of Contents
 
 * [Installation](#installation)
-* [Motivation](#motivation)
 * [Dashboard](#dashboard)
+* [Motivation](#motivation)
 * [Models](#models)
 * [Literature Datasets Summary](#literature-datasets-summary)
 * [Usage](#usage)
@@ -89,6 +91,13 @@ mamba env create -f environment.yml
 # Activate environment
 mamba activate topefind
 ```
+# Dashboard
+This repo comes with a
+[dashboard](https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/dashboard.html)
+made in [Panel](https://panel.holoviz.org/) 
+which is provided to analyze the results on a test set with some models.
+It can run on the fly on WASM, be aware that it might take a bit to install all packages from micropip.
+The dashboard can be easily modified and new results can be visualized by cloning the repo and providing a new DataFrame.
 
 # Motivation
 
@@ -355,10 +364,6 @@ transfer-learning dataset is given but lacks the differentiation between heavy a
 <sup>e</sup> Accounts only in this case for the total number of antibody chains and not complexes.  
 <sup>f</sup> Not explicitly stated by Parapred.
 
-# Dashboard
-
-A dashboard is provided to analyze the results on a test set with some models.  
-The dashboard can be easily modified or new results can be visualized by providing a new DataFrame.
 
 # Vendored
 

@@ -32,14 +32,15 @@ from scipy.stats import rankdata
 from panel.reactive import ReactiveHTML
 
 # Globals
-PYSCRIPT = False
+PYSCRIPT = True
 
 # To deploy to GH pages: https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/
 
 STRUCTURE_EXT = "bcif"
-ASSETS_NAME = "" if PYSCRIPT else "assets"
+ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard" if PYSCRIPT else "assets"
 
 # To load from local, e.g. after pyscript fetch
+# Must have the files locally
 # PDBE_JS_PATH = f"{ASSETS_NAME}/pdbe-molstar-plugin-3.1.1.js"
 # PDBE_CSS_PATH = f"{ASSETS_NAME}/pdbe-molstar-light-3.1.1.css"
 # PDBE_CSS_DARK_PATH = f"{ASSETS_NAME}/pdbe-molstar-3.1.1.css"
@@ -50,7 +51,7 @@ PDBE_CSS_PATH = "https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molst
 PDBE_CSS_DARK_PATH = "https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molstar-3.1.1.css"
 
 # When converting to pyodide-worker version remember to reset this path to the one served!
-MODEL_COMP_PATH = "benchmark.pkl.gz"
+MODEL_COMP_PATH = f"{ASSETS_NAME}/benchmark.pkl.gz"
 
 DF = pd.read_pickle(MODEL_COMP_PATH)
 NON_SELECTED_COLOR = {"r": 155, "g": 155, "b": 155}
