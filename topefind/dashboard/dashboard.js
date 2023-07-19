@@ -84,7 +84,7 @@ from panel.reactive import ReactiveHTML
 PYSCRIPT = True
 
 STRUCTURE_EXT = "bcif"
-ASSETS_NAME = "http://localhost:8000" if PYSCRIPT else "assets"
+ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/" if PYSCRIPT else "assets"
 MODEL_COMP_PATH = f"{ASSETS_NAME}/benchmark.pkl.gz"
 
 # To load from local, e.g. after pyscript fetch

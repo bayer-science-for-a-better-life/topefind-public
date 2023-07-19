@@ -34,6 +34,8 @@ from panel.reactive import ReactiveHTML
 # Globals
 PYSCRIPT = False
 
+# To deploy to GH pages: https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/
+
 STRUCTURE_EXT = "bcif"
 ASSETS_NAME = "" if PYSCRIPT else "assets"
 
