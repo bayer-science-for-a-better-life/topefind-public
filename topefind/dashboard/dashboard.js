@@ -83,12 +83,13 @@ from panel.reactive import ReactiveHTML
 # Globals
 PYSCRIPT = True
 
-# To deploy to GH pages: https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard
+# To deploy to GH pages: https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/
 
 STRUCTURE_EXT = "bcif"
 ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard" if PYSCRIPT else "assets"
 
 # To load from local, e.g. after pyscript fetch
+# Must have the files locally
 # PDBE_JS_PATH = f"{ASSETS_NAME}/pdbe-molstar-plugin-3.1.1.js"
 # PDBE_CSS_PATH = f"{ASSETS_NAME}/pdbe-molstar-light-3.1.1.css"
 # PDBE_CSS_DARK_PATH = f"{ASSETS_NAME}/pdbe-molstar-3.1.1.css"
@@ -110,7 +111,7 @@ MODELS = DF["model"].unique().tolist()
 PDBS = DF["pdb"].unique().tolist()
 METRICS = DF["metric"].unique().tolist()
 REGIONS = DF["region"].unique().tolist()
-CHAINS = ["heavy", "light", "both"]
+CHAINS = ["both", "heavy", "light"]
 DIFF_MODES = ["abs_norm_diff", "abs_norm_rank_diff"]
 PDBE_EXTRA_PARAMS = ["visual_style", "spin"]
 

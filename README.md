@@ -2,6 +2,7 @@
 [![Test Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/CrisSherban/be97eb90840a566980c59d00f26d9cd2/raw/test_topefind_public.json)](https://github.com/bayer-science-for-a-better-life/topefind-public/actions)
 [![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/CrisSherban/c4dc7ff205bbd6478f94462a864d5a83/raw/coverage_topefind_public.json)](https://github.com/bayer-science-for-a-better-life/topefind-public/actions)
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Dashboard](https://img.shields.io/badge/Panel-Dashboard-green)](https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/dashboard.html)
 
 ⚠️ This is a temporary public version ⚠️
 
@@ -96,7 +97,7 @@ This repo comes with a
 [dashboard](https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/dashboard.html)
 made in [Panel](https://panel.holoviz.org/) 
 which is provided to analyze the results on a test set with some models.
-It can run on the fly on WASM, be aware that it might take a bit to install all packages from micropip.
+It can run on the fly on WASM, be aware that it might take some minutes to install all packages from micropip and fully open.
 The dashboard can be easily modified and new results can be visualized by cloning the repo and providing a new DataFrame.
 
 # Motivation

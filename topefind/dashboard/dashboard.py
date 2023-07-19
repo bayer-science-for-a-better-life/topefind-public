@@ -62,7 +62,7 @@ MODELS = DF["model"].unique().tolist()
 PDBS = DF["pdb"].unique().tolist()
 METRICS = DF["metric"].unique().tolist()
 REGIONS = DF["region"].unique().tolist()
-CHAINS = ["heavy", "light", "both"]
+CHAINS = ["both", "heavy", "light"]
 DIFF_MODES = ["abs_norm_diff", "abs_norm_rank_diff"]
 PDBE_EXTRA_PARAMS = ["visual_style", "spin"]
 
