@@ -382,7 +382,7 @@ class PDBeMolStar(ReactiveHTML):
     validation_annotation = param.Boolean(default=False, doc="Adds 'annotation' control in the menu")
     domain_annotation = param.Boolean(default=False, doc="Adds 'annotation' control in the menu")
     low_precision_coords = param.Boolean(default=False, doc="Load low precision coordinates from the model server")
-    hide_controls = param.Boolean(default=False, doc="Hide the control menu")
+    hide_controls = param.Boolean(default=True, doc="Hide the control menu")
     sequence_panel = param.Boolean(default=True, doc="Show the sequence panel")
     expanded = param.Boolean(default=True, doc="""Display full-screen by default on load""")
     landscape = param.Boolean(default=True, doc="""Set landscape view.""")
