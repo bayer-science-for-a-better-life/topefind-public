@@ -26,9 +26,9 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/bayer-science-for-a-better-life/topefind"
-"Bug Tracker" = "https://github.com/bayer-science-for-a-better-life/topefind/issues"
-"Source" = "https://github.com/bayer-science-for-a-better-life/topefind"
+"Homepage" = "https://github.com/bayer-science-for-a-better-life/topefind-public"
+"Bug Tracker" = "https://github.com/bayer-science-for-a-better-life/topefind-public/issues"
+"Source" = "https://github.com/bayer-science-for-a-better-life/topefind-public"
 
 [tool.setuptools.packages.find]
 where = ["topefind"]
