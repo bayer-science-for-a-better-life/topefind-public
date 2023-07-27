@@ -20,6 +20,7 @@ TOPEFIND_PATH = Path(__file__).parent
 SABDAB_PATH = TOPEFIND_PATH.parent / "datasets" / "sabdab"
 MODELS_PATH = TOPEFIND_PATH.parent / "models"
 AAS_FEATURES_PATH = TOPEFIND_PATH.parent / "resources/aas_features.csv"
+AAs = np.array([aa for aa in "ACDEFGHIKLMNPQRSTVWY"])
 
 # Easily expandable to bigger CDR3s:
 # Check: https://www.imgt.org/IMGTScientificChart/Numbering/IMGTIGVLsuperfamily.html for more.

@@ -8,7 +8,7 @@
 
 Antibodies are particular Y-shaped proteins. They are one of the most essential
 parts of the adaptive immune system since they interact with antigens. Being
-able to engineer antibodies can significantly impact the production of therapeutics,
+able to engineer antibodies can significantly impact the development of therapeutics,
 where paratope prediction plays an essential role. Given the antibody's sequence,
 predicting the paratope means finding the specific amino acids that bind to its target.
 This repository provides the necessary tools to generate insights into paratope prediction,

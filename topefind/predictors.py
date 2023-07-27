@@ -56,6 +56,9 @@ class EndToEndPredictorName(StrEnum):
     af2_multimer = auto()
     esm_fold_multimer = auto()
     seq_to_cdr = auto()
+    aa_freq = auto()
+    pos_freq = auto()
+    aa_pos_freq = auto()
 
 
 class Predictor(ABC):
@@ -498,7 +501,7 @@ class ContactsClassifier(Predictor):
     other predictors.
     """
 
-    def __init__(self, name: EndToEndPredictorName.af2_multimer):
+    def __init__(self, name: EndToEndPredictorName = EndToEndPredictorName.af2_multimer):
         self.name = name
 
     def predict(self, an_input: Path | str) -> np.ndarray:
@@ -588,7 +591,7 @@ class ContactsClassifier(Predictor):
 
 
 class Seq2ParatopeCDR(Predictor):
-    def __init__(self, name: EndToEndPredictorName.seq_to_cdr):
+    def __init__(self, name: EndToEndPredictorName = EndToEndPredictorName.seq_to_cdr):
         self.name = name
 
     def predict(self, an_input: str) -> np.ndarray:
@@ -643,3 +646,168 @@ class Seq2ParatopeCDR(Predictor):
         inputs = dataset.get_column("antibody_sequence").to_list()
         labels = dataset.get_column("full_paratope_labels").to_list()
         return inputs, labels
+
+
+class AAFrequency(Predictor):
+    def __init__(
+            self,
+            name: EndToEndPredictorName = EndToEndPredictorName.aa_freq,
+    ):
+        self.name = name
+        self.aa_to_paratope = {aa: 0 for aa in utils.AAs}
+
+    def train(
+            self,
+            X: list[str],
+            y: list[list[bool]]
+    ):
+        for seq, labs in tqdm(zip(X, y), total=len(X)):
+            for aa, lab in zip(seq, labs):
+                if lab:
+                    self.aa_to_paratope[aa] += 1
+
+        summed_freqs = sum(list(self.aa_to_paratope.values()))
+        self.aa_to_paratope = {k: v / summed_freqs for k, v in self.aa_to_paratope.items()}
+
+    def predict(self, an_input: str) -> np.ndarray:
+        return np.array([self.aa_to_paratope[aa] for aa in an_input])
+
+    def predict_multiple(self, some_inputs: list[str]) -> list[np.ndarray]:
+        return [self.predict(an_input) for an_input in some_inputs]
+
+    def prepare_dataset(
+            self,
+            dataset: pl.DataFrame,
+    ) -> tuple[list[str], list[bool]]:
+        inputs = dataset.get_column("antibody_sequence").to_list()
+        labels = dataset.get_column("full_paratope_labels").to_list()
+        return inputs, labels
+
+
+class PosFrequency(Predictor):
+    """Very ugly coded... please review"""
+
+    def __init__(
+            self,
+            name: EndToEndPredictorName = EndToEndPredictorName.pos_freq,
+    ):
+        self.name = name
+        self.imgt_to_paratope = {imgt: 0 for imgt in utils.VALID_IMGT_IDS}
+
+    def train(
+            self,
+            X: list[str],
+            y: list[list[bool]]
+    ):
+        print("Computing IMGTs")
+        for seq, labs in tqdm(zip(X, y), total=len(X)):
+            try:
+                imgts = utils.get_antibody_numbering(seq)
+                for imgt, lab in zip(imgts, labs):
+                    if lab:
+                        self.imgt_to_paratope[imgt] += 1
+            except ValueError:
+                ...  # If ANARCI gives a strange IMGT to an AA we don't include that sequence
+
+        summed_freqs = sum(list(self.imgt_to_paratope.values()))
+        self.imgt_to_paratope = {k: v / summed_freqs for k, v in self.imgt_to_paratope.items()}
+
+    def predict(self, an_input: str) -> np.ndarray:
+        imgt_input = utils.get_antibody_numbering(an_input)
+        return np.array([self.imgt_to_paratope[imgt] for imgt in imgt_input])
+
+    def predict_multiple(self, some_inputs: list[str]) -> list[np.ndarray]:
+        return [self.predict(an_input) for an_input in some_inputs]
+
+    def prepare_dataset(
+            self,
+            dataset: pl.DataFrame,
+    ) -> tuple[list[str], list[bool]]:
+        inputs = dataset.get_column("antibody_sequence").to_list()
+        labels = dataset.get_column("full_paratope_labels").to_list()
+        return inputs, labels
+
+
+class AAPosFrequency(Predictor):
+    """Very ugly coded... please review, especially the usage of .index(), it's O(n)!!!"""
+
+    def __init__(
+            self,
+            name: EndToEndPredictorName = EndToEndPredictorName.aa_pos_freq,
+    ):
+        self.name = name
+        self.avail_aas = list(utils.AAs)
+        self.avail_imgts = list(utils.VALID_IMGT_IDS)
+        self.aa_imgt_to_paratope = np.zeros((len(self.avail_imgts), len(self.avail_aas)))
+
+    def train(
+            self,
+            X: list[str],
+            y: list[list[bool]]
+    ):
+        print("Computing IMGTs")
+        for seq, labs in tqdm(zip(X, y), total=len(X)):
+            try:
+                imgts = utils.get_antibody_numbering(seq)
+                for aa, imgt, lab in zip(seq, imgts, labs):
+                    if lab:
+                        self.aa_imgt_to_paratope[self.avail_imgts.index(imgt), self.avail_aas.index(aa)] += 1
+            except ValueError:
+                ...  # If ANARCI gives a strange IMGT to an AA we don't include that sequence
+
+        summed_freqs = self.aa_imgt_to_paratope.sum()
+        self.aa_imgt_to_paratope /= summed_freqs
+
+    def predict(self, an_input: str) -> np.ndarray:
+        imgt_input = utils.get_antibody_numbering(an_input)
+
+        return np.array([
+            self.aa_imgt_to_paratope[self.avail_imgts.index(imgt), self.avail_aas.index(aa)]
+            for aa, imgt in zip(an_input, imgt_input)])
+
+    def predict_multiple(self, some_inputs: list[str]) -> list[np.ndarray]:
+        return [self.predict(an_input) for an_input in some_inputs]
+
+    def prepare_dataset(
+            self,
+            dataset: pl.DataFrame,
+    ) -> tuple[list[str], list[bool]]:
+        inputs = dataset.get_column("antibody_sequence").to_list()
+        labels = dataset.get_column("full_paratope_labels").to_list()
+        return inputs, labels
+
+
+if __name__ == '__main__':
+    df_train = pd.read_parquet(
+        TOPEFIND_PATH.parent / "resources" / "paragraph_train.parquet",
+        columns=["antibody_sequence", "full_paratope_labels"]
+    )
+
+    df_test = pd.read_parquet(
+        TOPEFIND_PATH.parent / "resources" / "paragraph_test.parquet",
+        columns=["antibody_sequence", "full_paratope_labels"]
+    )
+
+    train_seqs = df_train.antibody_sequence.values.tolist()
+    train_labs = df_train.full_paratope_labels.values.tolist()
+
+    test_seqs = df_test.antibody_sequence.values.tolist()
+    test_labs = df_test.full_paratope_labels.values.tolist()
+    test_labs = [np.array(t, dtype=int) for t in test_labs]
+
+    predictor = PosFrequency()
+    predictor.train(train_seqs, train_labs)
+    predictions = [predictor.predict(seq) for seq in test_seqs]
+
+    y_preds, y_trues = [], []
+    not_counted = 0
+    for yp, yt in zip(predictions, test_labs):
+        if len(yp) == len(yt):
+            y_preds.append(yp)
+            y_trues.append(yt)
+        else:
+            not_counted += 1
+
+    from sklearn.metrics import average_precision_score
+    print(np.mean([average_precision_score(yt, yp) for yt, yp in zip(y_trues, y_preds)]))
+    print(f"Not considered: {not_counted}")

@@ -12,7 +12,7 @@ Set the global PYSCRIPT to True before the conversion.
 If you want to use pyodide-worker remember to change the generated .js with the correct URLs to the data
 you want to provide which has to be served on some service.
 
-You can easily serve everything locally as well when running from pyodide-worker by starting a http server:
+You can easily serve everything locally as well when running from pyodide-worker by starting a http server:x
 ``` python3 -m http.server ``` and then opening the dashboard.html in a browser.
 
 Please check: https://panel.holoviz.org/how_to/wasm/convert.html for more details.

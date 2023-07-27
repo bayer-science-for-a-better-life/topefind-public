@@ -5,6 +5,7 @@ Let's find the best hyperparameters and a classifier for ESM embeddings.
 
 import numpy as np
 import polars as pl
+from sklearn.tree import DecisionTreeClassifier
 from tqdm import tqdm
 from sklearn.metrics import average_precision_score
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
@@ -40,8 +41,11 @@ labels_test = test_df["full_paratope_labels"].to_list()
 # ----------------------------------------------------------------------------------------------------------------------
 y_train = np.concatenate(labels_train)
 y_test = np.concatenate(labels_test)
-X_train = np.vstack([EMBEDDER.embed(inputs)[0].to("cpu").numpy() for inputs in tqdm(seqs_train)]).astype(float)
-X_test = np.vstack([EMBEDDER.embed(inputs)[0].to("cpu").numpy() for inputs in tqdm(seqs_test)]).astype(float)
+
+train_embs = [EMBEDDER.embed(inputs)[0].to("cpu").numpy() for inputs in tqdm(seqs_train)]
+test_embs = [EMBEDDER.embed(inputs)[0].to("cpu").numpy() for inputs in tqdm(seqs_test)]
+X_train = np.vstack(train_embs).astype(float)
+X_test = np.vstack(test_embs).astype(float)
 
 print(f"Training set has {X_train.shape[0]} elements, with {X_train.shape[1]} features each")
 print(f"Test set has {X_test.shape[0]} elements, with {X_test.shape[1]} features each")
@@ -51,7 +55,12 @@ print(f"Test set has {X_test.shape[0]} elements, with {X_test.shape[1]} features
 # ----------------------------------------------------------------------------------------------------------------------
 rfc_param_grid = [{
     "max_depth": [5, 10, 25, 50, None],
-    "n_estimators": [128, 256]
+    "n_estimators": [128, 256],
+    "class_weights": ["balanced", None]
+}]
+dt_param_grid = [{
+    "max_depth": [5, 10, 25, 50, None],
+    "class_weights": ["balanced", None]
 }]
 hgb_param_grid = [{
     "max_iter": [100, 200, 300],
@@ -73,6 +82,11 @@ models = {
         "name": "RF       ",
         "estimator": RandomForestClassifier(random_state=SEED, n_jobs=32),
         "param": rfc_param_grid
+    },
+    "dt": {
+        "name": "DT       ",
+        "estimator": DecisionTreeClassifier(random_state=SEED),
+        "param": dt_param_grid
     },
     "hgb": {
         "name": "HGB      ",
@@ -96,8 +110,13 @@ models = {
     },
 }
 
+# results_short_train = {} # TODO: find indexes from GridSearch
 results_short_val = {}
 results_short_test = {}
+
+results_over_ab_train = {}
+# results_over_ab_val = {} # TODO: find indexes from GridSearch
+results_over_ab_test = {}
 
 # ----------------------------------------------------------------------------------------------------------------------
 # TUNE
@@ -111,39 +130,61 @@ for clf in models.keys():
         cv=StratifiedKFold(N_FOLDS),
         n_jobs=5,
         scoring="average_precision",
-
+        refit=True,
     )
     model.fit(X_train, y_train)
 
     print(f"Best parameters set found:\n{model.best_params_}\n")
     print("Grid scores on the validation sets: ")
 
-    means_cv = model.cv_results_["mean_test_score"]  # over CV val sets, don't confuse with holdout set
-    stds_cv = model.cv_results_["std_test_score"]  # over CV val sets, don't confuse with holdout set
+    means_cv_train = model.cv_results_["mean_train_score"]
+    stds_cv_train = model.cv_results_["std_train_score"]
+    means_cv_val = model.cv_results_["mean_test_score"]  # over CV val sets, don't confuse with holdout set
+    stds_cv_val = model.cv_results_["std_test_score"]  # over CV val sets, don't confuse with holdout set
+
     params = model.cv_results_["params"]
 
-    for mean, std, params_tuple in zip(means_cv, stds_cv, params):
-        print(f"{mean:.2F} (+/-{std:.2F}) over {N_FOLDS} folds for {params_tuple}")
+    for mean_train, std_train, mean_val, std_val, params_tuple in \
+            zip(means_cv_train, stds_cv_train, means_cv_val, stds_cv_val, params):
+
+        print(f"Train: {mean_train:.2F} (+/-{std_train:.2F}) | "
+              f"Val: {mean_train:.2F} (+/-{std_val:.2F}) "
+              f"over {N_FOLDS} folds for {params_tuple}")
 
     # Saving the score on entire GridSearchCV
     results_short_val[clf] = model.best_score_
     y_pred = model.predict_proba(X_test)[:, -1]
     results_short_test[clf] = average_precision_score(y_test, y_pred)
+
+    # Saving mean scores of antibodies
+    ab_train_preds = [model.predict_proba(ab_embs)[:, -1] for ab_embs in train_embs]
+    ab_test_preds = [model.predict_proba(ab_embs)[:, -1] for ab_embs in test_embs]
+
+    train_scores = [average_precision_score(lab, pred) for lab, pred in zip(labels_train, ab_train_preds)]
+    test_scores = [average_precision_score(lab, pred) for lab, pred in zip(labels_test, ab_test_preds)]
+    results_over_ab_train[clf] = f"{np.mean(train_scores)} +/- {np.std(train_scores)}"
+    results_over_ab_test[clf] = f"{np.mean(test_scores)} +/- {np.std(test_scores)}"
     print("------------------------------------------\n")
 
 # ----------------------------------------------------------------------------------------------------------------------
 # SHOW RESULTS
 # ----------------------------------------------------------------------------------------------------------------------
 # Pay attention, the results are given on the whole test and validation sets and not on each antibody here.
+print("\nSummary of best results on train set:")
+print("Estimator")
+for clf in results_over_ab_train.keys():
+    print(f"Antibody-wise: {models[clf]['name']}\t - score: {results_over_ab_train[clf]:.3F}")
+
 print("\nSummary of best results on validation set:")
 print("Estimator")
 for clf in results_short_val.keys():
-    print(f"{models[clf]['name']}\t - score: {results_short_val[clf]:.3F}")
+    print(f"Combined: {models[clf]['name']}\t - score: {results_short_val[clf]:.3F}")
 
 print("\nSummary of best results on the test set:")
 print("Estimator")
 for clf in results_short_test.keys():
-    print(f"{models[clf]['name']}\t - score: {results_short_test[clf]:.3F}")
+    print(f"Combined: {models[clf]['name']}\t - score: {results_short_test[clf]:.3F}")
+    print(f"Antibody-wise: {models[clf]['name']}\t - score: {results_over_ab_test[clf]:.3F}")
 
 # ----------------------------------------------------------------------------------------------------------------------
 # OUTPUT
