@@ -100,6 +100,12 @@ which is provided to analyze the results on a test set with some models.
 It can run on the fly on WASM, be aware that it might take some minutes to install all packages from micropip and fully open.
 The dashboard can be easily modified and new results can be visualized by cloning the repo and providing a new DataFrame.
 
+<div align="center">
+
+https://github.com/bayer-science-for-a-better-life/topefind-public/assets/28055473/c76e4506-0aab-4318-954d-54a89108c206
+
+</div>
+
 # Motivation
 
 ### What can you do with better predictions?
