@@ -31,19 +31,19 @@ ESM2 650M + RF Transfer Learning
 </tr>
 
 <tr>
-<td>
+<td width="10%">
   
-<img height="300" alt="image" src="resources/images/cbar.png">
+<img alt="color bar" src="resources/images/cbar.png">
 
 </td>  
-<td>
+<td width="30%">
 
-<img height="300" alt="image" src="resources/images/af2.gif">
+<img alt="alpha fold multimer derived paratope" src="resources/images/af2.gif">
 
 </td>
-<td>
+<td width="30%">
 
-<img height="300" alt="image" src="resources/images/esm.gif">
+<img alt="esm2 650m + random forest predicted paratope" src="resources/images/esm.gif">
 
 </td>
 </tr>
