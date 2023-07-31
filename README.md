@@ -81,7 +81,7 @@ After having installed `mamba` or `conda`, clone the repository and create the e
 
 ```bash
 # Clone it
-git clone https://github.com/bayer-science-for-a-better-life/topefind
+git clone https://github.com/bayer-science-for-a-better-life/topefind-public
 
 # Enter
 cd topefind
