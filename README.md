@@ -12,7 +12,7 @@ able to engineer antibodies can significantly impact the development of therapeu
 where paratope prediction plays an essential role. Given the antibody's sequence,
 predicting the paratope means finding the specific amino acids that bind to its target.
 This repository provides the necessary tools to generate insights into paratope prediction,
-ultimately guiding model development towards a faster and better development of therapeutics.
+ultimately guiding model development towards a faster and better production of therapeutics.
 
 
 
