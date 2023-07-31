@@ -930,7 +930,7 @@ def dashboard_app():
         other visual styles render correctly.
 
         If you find any other problems or solutions please open an issue under
-        [topefind's issues](https://github.com/bayer-science-for-a-better-life/topefind/issues)
+        [topefind's issues](https://github.com/bayer-science-for-a-better-life/topefind-public/issues)
         """
 
     global SCATTER_PLOT_PANEL
