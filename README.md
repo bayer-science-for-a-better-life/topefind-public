@@ -155,7 +155,6 @@ https://github.com/bayer-science-for-a-better-life/topefind-public/assets/280554
 |            | ESM1b               | **0.75**<sub><sup>±0.21</sup></sub> | **0.98**<sub><sup>±0.03</sup></sub> | **0.70**<sub><sup>±0.28</sup></sub> | 0.55<sub><sup>±0.25</sup></sub>     |
 |            | ProtT5 XL           | **0.75**<sub><sup>±0.21</sup></sub> | **0.98**<sub><sup>±0.03</sup></sub> | **0.70**<sub><sup>±0.28</sup></sub> | **0.57**<sub><sup>±0.25</sup></sub> |
 |            | RITA XL             | 0.70<sub><sup>±0.22</sup></sub>     | 0.97<sub><sup>±0.04</sup></sub>     | 0.65<sub><sup>±0.29</sup></sub>     | 0.46<sub><sup>±0.24</sup></sub>     |
-|            | IGLM                | 0.67<sub><sup>±0.22</sup></sub>     | 0.97<sub><sup>±0.04</sup></sub>     | 0.48<sub><sup>±0.30</sup></sub>     | 0.29<sub><sup>±0.21</sup></sub>     |
 
 </div>
 
@@ -345,15 +344,15 @@ Some relevant models from the literature are reported for comparison.
 and is not
 considered in topefind for inference.
 
-Some relevant models in literature are not included for the following reasons:  
+Some relevant models in the literature are not included for the following reasons:  
 <sup>c</sup> Weights not available.  
 <sup>d</sup> Weights not available.  
 <sup>e</sup> License not permissive enough.
 
 # Literature Datasets Summary
 
-We report some relevant datasets, and a brief summary of the pre-processing done to each one to
-get an overview of the current landscape. For more details check each model's paper reported in [Models](#models).
+We report some relevant datasets and a brief summary of the pre-processing done to each one to
+get an overview of the current landscape. Check each model's paper reported in [Models](#models) for more details.
 
 | Method               |             Reported PR AUC             | Dataset Availability |  Dataset Size   | Dataset Pre-Processing                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 |----------------------|:---------------------------------------:|:--------------------:|:---------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
