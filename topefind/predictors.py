@@ -1,6 +1,5 @@
 """
 This implementation focuses on gathering known antibody paratope predictor methods.
-The Facade pattern is preferred to expose the methods.
 The responsibility of creating the subsystems falls under each concrete Predictor.
 
 In this module, the main focus is not the performance of forward pass but rather the ease of usage
