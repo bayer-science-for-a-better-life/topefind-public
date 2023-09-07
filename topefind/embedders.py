@@ -1,5 +1,5 @@
 """
-This implementation focuses on gathering known protein embedding methods and exposes them with the Facade pattern.
+This implementation focuses on gathering known protein embedding methods.
 Following the abstract base class, embedders should provide an embed method.
 The responsibility of creating the subsystems falls under each concrete Embedder.
 """

@@ -24,6 +24,9 @@ from topefind.predictors import (
     Seq2ParatopeCDR,
     EndToEndPredictorName,
     Predictor,
+    AAFrequency,
+    PosFrequency,
+    AAPosFrequency,
 )
 
 from topefind.embedders import (
@@ -210,6 +213,18 @@ def prepare_testing(
         model = Seq2ParatopeCDR(EndToEndPredictorName[name])
     elif "af2_multimer" in name:
         model = ContactsClassifier(EndToEndPredictorName[name])
+    elif "aa_freq" in name:
+        model = AAFrequency(EndToEndPredictorName[name])
+        X, y = model.prepare_dataset(train)
+        model.train(X, y)
+    elif "pos_freq" == name:
+        model = PosFrequency(EndToEndPredictorName[name])
+        X, y = model.prepare_dataset(train)
+        model.train(X, y)
+    elif "aa_pos_freq" == name:
+        model = AAPosFrequency(EndToEndPredictorName[name])
+        X, y = model.prepare_dataset(train)
+        model.train(X, y)
     else:
         model = prepare_embedder(train, test, name=name, device=device, n_jobs=n_jobs)
 
@@ -328,9 +343,9 @@ class ParagraphBenchmark:
         test = sabdab.join(paragraph_test_df, on=["pdb", "antibody_chain", "chain_type"])
 
         # These can be saved for future usages.
-        train.write_parquet(TOPEFIND_PATH.parent / "resources/paragraph_train.parquet")
-        val.write_parquet(TOPEFIND_PATH.parent / "resources/paragraph_val.parquet")
-        test.write_parquet(TOPEFIND_PATH.parent / "resources/paragraph_test.parquet")
+        # train.write_parquet(TOPEFIND_PATH.parent / "resources/paragraph_train.parquet")
+        # val.write_parquet(TOPEFIND_PATH.parent / "resources/paragraph_val.parquet")
+        # test.write_parquet(TOPEFIND_PATH.parent / "resources/paragraph_test.parquet")
         return train, val, test
 
     @staticmethod
@@ -378,7 +393,13 @@ class ParagraphBenchmark:
 
                 for region_name in AB_REGIONS:
                     region_idxs = get_imgt_region_indexes(ab_imgt, region_name)
-                    yp_region = yp[region_idxs]
+                    # Baselines based on numbering frequencies use ANARCI, and numbering might cause some sequences
+                    # to differ. If you encounter this, you could (quickly and dirtly) use an exception for the
+                    # next line and continue
+                    try:
+                        yp_region = yp[region_idxs]
+                    except IndexError:
+                        continue
                     yt_region = yt[region_idxs]
                     region_seq = "".join(exploded_antibody_seq[region_idxs])
                     ab_imgt_region = np.array(ab_imgt)[region_idxs]

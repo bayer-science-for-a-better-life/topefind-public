@@ -729,7 +729,7 @@ class PosFrequency(Predictor):
 
 
 class AAPosFrequency(Predictor):
-    """Very ugly coded... please review, especially the usage of .index(), it's O(n)!!!"""
+    """Very ugly coded... please review, especially the usage of .index()!!!"""
 
     def __init__(
             self,
@@ -795,7 +795,7 @@ if __name__ == '__main__':
     test_labs = df_test.full_paratope_labels.values.tolist()
     test_labs = [np.array(t, dtype=int) for t in test_labs]
 
-    predictor = PosFrequency()
+    predictor = AAPosFrequency()
     predictor.train(train_seqs, train_labs)
     predictions = [predictor.predict(seq) for seq in test_seqs]
 
@@ -809,5 +809,6 @@ if __name__ == '__main__':
             not_counted += 1
 
     from sklearn.metrics import average_precision_score
+
     print(np.mean([average_precision_score(yt, yp) for yt, yp in zip(y_trues, y_preds)]))
     print(f"Not considered: {not_counted}")
