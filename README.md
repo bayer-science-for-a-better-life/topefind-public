@@ -84,7 +84,7 @@ After having installed `mamba` or `conda`, clone the repository and create the e
 git clone https://github.com/bayer-science-for-a-better-life/topefind-public
 
 # Enter
-cd topefind
+cd topefind-public
 
 # Create environment
 mamba env create -f environment.yml

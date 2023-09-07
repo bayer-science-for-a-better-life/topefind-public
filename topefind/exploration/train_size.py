@@ -40,7 +40,7 @@ INTERESTED_COLUMNS = [
 RANDOM_STATES = np.arange(3)
 NUM_FRACTIONS = 10
 N_ESTIMATORS = 256
-N_JOBS = 8
+N_JOBS = 64
 
 # ESM2 8M config for random weights
 CONFIG_ESM2_8M_RANDOM = EsmConfig(

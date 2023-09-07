@@ -123,6 +123,7 @@ class ConfigurizedEmbedder:
             stdouts.append(subprocess.run(["git", "clone", f"{model_url}"], capture_output=True, text=True))
             weights_url = f"{model_url}/resolve/main/pytorch_model.bin"
             download_url(weights_url, model_path / "pytorch_model.bin", chunk_size=1024)
+            os.rename(model_path / "model.safetensors", model_path / "model.ckpt")
             os.chdir(cwd)
             [print(result.stdout) for result in stdouts]
 
