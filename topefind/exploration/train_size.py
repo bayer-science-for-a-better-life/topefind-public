@@ -15,8 +15,10 @@ from transformers import EsmModel, EsmConfig
 from topefind.utils import get_device, TOPEFIND_PATH
 from topefind.predictors import PLMSKClassifier
 from topefind.embedders import (
-    Embedder, ESMEmbedder, \
-    ProtT5Embedder, EmbedderName, \
+    Embedder, ESMEmbedder,
+    ProtT5Embedder, EmbedderName,
+    PhysicalPropertiesNoPosEmbedder,
+    PhysicalPropertiesPosEmbedder,
     PhysicalPropertiesPosContextEmbedder
 )
 
@@ -37,12 +39,12 @@ INTERESTED_COLUMNS = [
     "method",
     "scfv",
 ]
-RANDOM_STATES = np.arange(2)
-NUM_FRACTIONS = 3
-N_ESTIMATORS = 25
-N_JOBS = 8
+RANDOM_STATES = np.arange(3)
+NUM_FRACTIONS = 20
+N_ESTIMATORS = 128
+N_JOBS = 64
 
-# ESM2 8M config for random weights
+# ESM2 8M config for random weights - untrained
 CONFIG_ESM2_8M_RANDOM = EsmConfig(
     vocab_size=33, mask_token_id=32, pad_token_id=1, hidden_size=320,
     num_hidden_layers=6, num_attention_heads=20, intermediate_size=1280,
@@ -52,7 +54,7 @@ CONFIG_ESM2_8M_RANDOM = EsmConfig(
     output_hidden_states=True, max_position_embeddings=1026
 )
 
-# ESM2 650M config for random weights
+# ESM2 650M config for random weights - untrained
 CONFIG_ESM2_650M_RANDOM = EsmConfig(
     vocab_size=33, mask_token_id=32, pad_token_id=1, hidden_size=1280,
     num_hidden_layers=33, num_attention_heads=20, intermediate_size=5120,
@@ -127,15 +129,18 @@ def main():
     esm2_8m_untrained = ESMEmbedder(EmbedderName.esm2_8m)
     esm2_8m_untrained.model = EsmModel(config=CONFIG_ESM2_8M_RANDOM).to(device)
     esm2_8m_untrained.name += "_untrained"
-    # esm2_650m_untrained = ESMEmbedder(EmbedderName.esm2_650m)
-    # esm2_650m_untrained.model = EsmModel(config=CONFIG_ESM2_650M_RANDOM).to(device)
-    # esm2_650m_untrained.name += "_untrained"
+    esm2_650m_untrained = ESMEmbedder(EmbedderName.esm2_650m)
+    esm2_650m_untrained.model = EsmModel(config=CONFIG_ESM2_650M_RANDOM).to(device)
+    esm2_650m_untrained.name += "_untrained"
 
     df = pd.concat([
         increase_train_size(esm2_8m_untrained),
+        increase_train_size(esm2_650m_untrained),
         increase_train_size(ESMEmbedder(EmbedderName.esm2_8m)),
-        # increase_train_size(ESMEmbedder(EmbedderName.esm2_650m)),
-        # increase_train_size(ProtT5Embedder(EmbedderName.prot_t5_xl)),
+        increase_train_size(ESMEmbedder(EmbedderName.esm2_650m)),
+        increase_train_size(ProtT5Embedder(EmbedderName.prot_t5_xl)),
+        increase_train_size(PhysicalPropertiesNoPosEmbedder(EmbedderName.aa)),
+        increase_train_size(PhysicalPropertiesPosEmbedder(EmbedderName.imgt_aa)),
         increase_train_size(PhysicalPropertiesPosContextEmbedder(EmbedderName.imgt_aa_ctx_23)),
     ])
 
@@ -162,7 +167,6 @@ def main():
 
     plt.tight_layout()
     plt.savefig(FILE_PATH.parent / "training_size.pdf")
-    plt.show()
 
 
 if __name__ == '__main__':
