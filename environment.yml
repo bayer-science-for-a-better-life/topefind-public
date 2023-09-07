@@ -19,7 +19,7 @@ dependencies:
   - ruff
 
   # Machine Learning
-  - transformers<=4.31.0
+  - transformers=4.31
   - sentencepiece
   - protobuf
   - scikit-learn
