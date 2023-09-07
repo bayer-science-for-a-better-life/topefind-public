@@ -37,10 +37,10 @@ INTERESTED_COLUMNS = [
     "method",
     "scfv",
 ]
-RANDOM_STATES = np.arange(3)
-NUM_FRACTIONS = 10
-N_ESTIMATORS = 256
-N_JOBS = 64
+RANDOM_STATES = np.arange(2)
+NUM_FRACTIONS = 3
+N_ESTIMATORS = 25
+N_JOBS = 8
 
 # ESM2 8M config for random weights
 CONFIG_ESM2_8M_RANDOM = EsmConfig(
