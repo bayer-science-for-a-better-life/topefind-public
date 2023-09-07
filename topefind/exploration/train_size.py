@@ -134,8 +134,8 @@ def main():
     df = pd.concat([
         increase_train_size(esm2_8m_untrained),
         increase_train_size(ESMEmbedder(EmbedderName.esm2_8m)),
-        increase_train_size(ESMEmbedder(EmbedderName.esm2_650m)),
-        increase_train_size(ProtT5Embedder(EmbedderName.prot_t5_xl)),
+        # increase_train_size(ESMEmbedder(EmbedderName.esm2_650m)),
+        # increase_train_size(ProtT5Embedder(EmbedderName.prot_t5_xl)),
         increase_train_size(PhysicalPropertiesPosContextEmbedder(EmbedderName.imgt_aa_ctx_23)),
     ])
 
