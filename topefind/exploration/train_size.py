@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import polars as pl
 import seaborn as sns
+import torch
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import average_precision_score
 from transformers import EsmModel, EsmConfig
@@ -79,6 +80,12 @@ TEST_SEQUENCES = TEST.get_column("antibody_sequence").to_list()
 TEST_LABELS = TEST.get_column("full_paratope_labels").to_list()
 
 
+def clean_mem(device, model):
+    del model
+    if "cuda" in device:
+        torch.cuda.empty_cache()
+
+
 def increase_train_size(embedder: Embedder):
     ap_means = []
     ap_stds = []
@@ -126,19 +133,37 @@ def increase_train_size(embedder: Embedder):
 
 def main():
     device = get_device()
+
     esm2_8m_untrained = ESMEmbedder(EmbedderName.esm2_8m)
     esm2_8m_untrained.model = EsmModel(config=CONFIG_ESM2_8M_RANDOM).to(device)
     esm2_8m_untrained.name += "_untrained"
+    esm2_8m_untrained_res = increase_train_size(esm2_8m_untrained)
+    clean_mem(device, esm2_8m_untrained)
+
     esm2_650m_untrained = ESMEmbedder(EmbedderName.esm2_650m)
     esm2_650m_untrained.model = EsmModel(config=CONFIG_ESM2_650M_RANDOM).to(device)
     esm2_650m_untrained.name += "_untrained"
+    esm2_650m_untrained_res = increase_train_size(esm2_650m_untrained)
+    clean_mem(device, esm2_650m_untrained)
+
+    model = ESMEmbedder(EmbedderName.esm2_8m, device=device)
+    esm2_8m_res = increase_train_size(model)
+    clean_mem(device, model)
+
+    model = ESMEmbedder(EmbedderName.esm2_650m, device=device)
+    esm2_650m_res = increase_train_size(model)
+    clean_mem(device, model)
+
+    model = ProtT5Embedder(EmbedderName.prot_t5_xl, device=device)
+    prot_t5_res = increase_train_size(model)
+    clean_mem(device, model)
 
     df = pd.concat([
-        increase_train_size(esm2_8m_untrained),
-        increase_train_size(esm2_650m_untrained),
-        increase_train_size(ESMEmbedder(EmbedderName.esm2_8m)),
-        increase_train_size(ESMEmbedder(EmbedderName.esm2_650m)),
-        increase_train_size(ProtT5Embedder(EmbedderName.prot_t5_xl)),
+        esm2_8m_untrained_res,
+        esm2_650m_untrained_res,
+        esm2_8m_res,
+        esm2_650m_res,
+        prot_t5_res,
         increase_train_size(PhysicalPropertiesNoPosEmbedder(EmbedderName.aa)),
         increase_train_size(PhysicalPropertiesPosEmbedder(EmbedderName.imgt_aa)),
         increase_train_size(PhysicalPropertiesPosContextEmbedder(EmbedderName.imgt_aa_ctx_23)),
