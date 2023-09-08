@@ -134,17 +134,17 @@ def increase_train_size(embedder: Embedder):
 def main():
     device = get_device()
 
-    esm2_8m_untrained = ESMEmbedder(EmbedderName.esm2_8m)
-    esm2_8m_untrained.model = EsmModel(config=CONFIG_ESM2_8M_RANDOM).to(device)
-    esm2_8m_untrained.name += "_untrained"
-    esm2_8m_untrained_res = increase_train_size(esm2_8m_untrained)
-    clean_mem(device, esm2_8m_untrained)
-
     esm2_650m_untrained = ESMEmbedder(EmbedderName.esm2_650m)
     esm2_650m_untrained.model = EsmModel(config=CONFIG_ESM2_650M_RANDOM).to(device)
     esm2_650m_untrained.name += "_untrained"
     esm2_650m_untrained_res = increase_train_size(esm2_650m_untrained)
     clean_mem(device, esm2_650m_untrained)
+
+    esm2_8m_untrained = ESMEmbedder(EmbedderName.esm2_8m)
+    esm2_8m_untrained.model = EsmModel(config=CONFIG_ESM2_8M_RANDOM).to(device)
+    esm2_8m_untrained.name += "_untrained"
+    esm2_8m_untrained_res = increase_train_size(esm2_8m_untrained)
+    clean_mem(device, esm2_8m_untrained)
 
     model = ESMEmbedder(EmbedderName.esm2_8m, device=device)
     esm2_8m_res = increase_train_size(model)
