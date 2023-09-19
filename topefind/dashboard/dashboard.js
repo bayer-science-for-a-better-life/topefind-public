@@ -77,7 +77,6 @@ import pandas as pd
 import matplotlib.cm as cm
 import plotly.express as px
 import plotly.graph_objects as go
-from scipy.stats import rankdata
 from panel.reactive import ReactiveHTML
 
 # Globals
