@@ -28,7 +28,6 @@ import pandas as pd
 import matplotlib.cm as cm
 import plotly.express as px
 import plotly.graph_objects as go
-from scipy.stats import rankdata
 from panel.reactive import ReactiveHTML
 
 # Globals
@@ -54,7 +53,6 @@ if PYSCRIPT:
 else:
     MODEL_COMP_PATH = "benchmark.pkl.gz"
 
-
 DF = pd.read_pickle(MODEL_COMP_PATH)
 NON_SELECTED_COLOR = {"r": 155, "g": 155, "b": 155}
 AG_COLOR = {"r": 10, "g": 200, "b": 0}
@@ -63,16 +61,26 @@ NORMAL_ROW_MAX_HEIGHT = 500
 MODELS = DF["model"].unique().tolist()
 PDBS = DF["pdb"].unique().tolist()
 METRICS = DF["metric"].unique().tolist()
+METRICS.remove("bal_acc")
+METRICS.insert(0, "bal_acc")
 REGIONS = DF["region"].unique().tolist()
 CHAINS = ["both", "heavy", "light"]
-DIFF_MODES = ["abs_norm_diff", "abs_norm_rank_diff"]
+DIFF_MODES = ["abs_norm_diff"]
 PDBE_EXTRA_PARAMS = ["visual_style", "spin"]
+
+MODELS_X = copy.deepcopy(MODELS)
+MODELS_X.remove("esm2_650m_rf")
+MODELS_X.insert(0, "esm2_650m_rf")
+
+MODELS_Y = copy.deepcopy(MODELS)
+MODELS_Y.remove("imgt_aa_ctx_23_rf")
+MODELS_Y.insert(0, "imgt_aa_ctx_23_rf")
 
 PDBE_MOLSTAR = ReactiveHTML()
 SCATTER_PLOT_PANEL = pn.pane.Plotly()
 VIOLIN_PLOT_PANEL = pn.pane.Plotly()
-MODELS_X_WIDGET = pn.widgets.Select(name='Model on x axis', options=MODELS)
-MODELS_Y_WIDGET = pn.widgets.Select(name='Model on y axis', options=MODELS)
+MODELS_X_WIDGET = pn.widgets.Select(name='Model on x axis', options=MODELS_X)
+MODELS_Y_WIDGET = pn.widgets.Select(name='Model on y axis', options=MODELS_Y)
 CHAINS_WIDGET = pn.widgets.Select(name='Chain', options=CHAINS)
 METRICS_WIDGET = pn.widgets.Select(name='Metric', options=METRICS)
 REGIONS_WIDGET = pn.widgets.Select(name='Region', options=REGIONS)
@@ -557,7 +565,6 @@ def find_paratope_labels(chains, df):
         tmp_df = df[df["chain_type"].isin([curr_chain])]
         chain_id_orig = tmp_df["antibody_chain"].iloc[0]
         paratope_labels_res_ins = find_numbered_labels(tmp_df)
-
         for res_ins in paratope_labels_res_ins:
             paratope_labels_selections.append({
                 "struct_asym_id": str(chain_id_orig),
@@ -626,8 +633,6 @@ def preds_diff(
 ):
     if mode == "abs_norm_diff":
         diffs = np.abs(normalize(preds1) - normalize(preds2))
-    elif mode == "abs_norm_rank_diff":
-        diffs = np.abs(normalize(rankdata(preds1)) - normalize(rankdata(preds2)))
     else:
         raise ValueError("DifferenceMode not valid. You might have accidentally added a"
                          " new one without providing the implementation here")
