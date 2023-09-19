@@ -179,6 +179,8 @@ NAME_BEAUTIFIER = {
     "esm2_150m_de_biased_rf": "ESM2 150M + DeBiased + RF",
     "esm2_650m_de_biased_rf": "ESM2 650M + DeBiased + RF",
     "esm2_3b_de_biased_rf": "ESM2 3B + DeBiased + RF",
+    "esm2_8m_untrained_rf": "ESM2 8M w Random Weights + RF",
+    "esm2_650m_untrained_rf": "ESM2 650M w Random Weights + RF",
 }
 
 

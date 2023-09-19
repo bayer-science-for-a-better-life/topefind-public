@@ -13,8 +13,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import average_precision_score
 from transformers import EsmModel, EsmConfig
 
-from topefind.utils import get_device, TOPEFIND_PATH
-from topefind.predictors import PLMSKClassifier
+from topefind.utils import get_device, TOPEFIND_PATH, NAME_BEAUTIFIER
+from topefind.predictors import PLMSKClassifier, PosFrequency, Predictor
 from topefind.embedders import (
     Embedder, ESMEmbedder, EmbedderName,
     PhysicalPropertiesNoPosEmbedder,
@@ -130,7 +130,48 @@ def increase_train_size(embedder: Embedder):
     })
 
 
-def main():
+def increase_train_size_predictor_only(predictor):
+    ap_means = []
+    ap_stds = []
+    models = []
+    r_states = []
+    fraction_values = []
+
+    for random_state in RANDOM_STATES:
+        train_df = TRAIN.sample(frac=1.0, seed=random_state)
+        fractions = (np.arange(NUM_FRACTIONS) + 1) / NUM_FRACTIONS
+
+        for frac in fractions:
+            print(f"Random state: {random_state} - Current training size {frac}")
+            current_num_samples = int(len(train_df) * frac)
+
+            X_train, y_train = predictor.prepare_dataset(train_df[:current_num_samples])
+            predictor.train(X_train, y_train)
+
+            scores = []
+            for yt, seq in zip(TEST_LABELS, TEST_SEQUENCES):
+                try:
+                    scores.append(average_precision_score(yt, predictor.predict(seq)))
+                except ValueError:
+                    print("Mismatch of lengths or additional errors")
+
+            ap_means.append(np.mean(scores))
+            ap_stds.append(np.std(scores))
+            models.append(str(predictor.name))
+            r_states.append(random_state)
+            fraction_values.append(frac)
+            print(f"AP: {ap_means[-1]:.2F} +/- {ap_stds[-1]:.2F}")
+
+    return pd.DataFrame({
+        "mean_ap": ap_means,
+        "std_ap": ap_stds,
+        "model": models,
+        "r_state": r_states,
+        "fraction": fraction_values
+    })
+
+
+def run_experiment():
     device = get_device()
 
     model = ESMEmbedder(EmbedderName.esm2_8m, device=device)
@@ -161,11 +202,23 @@ def main():
         increase_train_size(PhysicalPropertiesNoPosEmbedder(EmbedderName.aa)),
         increase_train_size(PhysicalPropertiesPosEmbedder(EmbedderName.imgt_aa)),
         increase_train_size(PhysicalPropertiesPosContextEmbedder(EmbedderName.imgt_aa_ctx_23)),
+        increase_train_size_predictor_only(PosFrequency())
     ])
 
     df.to_csv(FILE_PATH.parent / "training_size.csv")
 
-    fig, axs = plt.subplots(1, 1, figsize=(6, 6))
+
+if __name__ == '__main__':
+    # run_experiment()
+
+    df = pd.read_csv("training_size.csv")
+    df = df[df["model"] != "aa"]
+    df = df[df["model"] != "imgt_aa"]
+    df["model"] = df["model"].apply(
+        lambda x: NAME_BEAUTIFIER[x + "_rf"] if "pos_freq" not in x else NAME_BEAUTIFIER[x]
+    )
+
+    fig, axs = plt.subplots(1, 1, figsize=(5, 5))
     sns.lineplot(
         df,
         x="fraction",
@@ -176,17 +229,13 @@ def main():
         dashes=False,
         ax=axs
     )
-    axs.set_title(f"Increasing training size for RF head")
-    axs.set_xlabel("Fraction of training set")
-    axs.set_ylabel("Average Precision")
-    axs.set_ylim(0.1, 0.74)
+    axs.set_title("")
+    axs.set_xlabel("")
+    axs.set_ylabel("")
+    axs.set_ylim(0.22, 0.8)
     axs.grid()
-    axs.legend(loc="center right", fontsize="6")
+    axs.legend(loc="center right", fontsize="8")
     sns.despine(ax=axs)
 
     plt.tight_layout()
-    plt.savefig(FILE_PATH.parent / "training_size.pdf")
-
-
-if __name__ == '__main__':
-    main()
+    plt.savefig(FILE_PATH.parent / "training_size.svg")
