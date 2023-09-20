@@ -618,8 +618,8 @@ def find_paratope_labels(chains, df):
         for res_ins in paratope_labels_res_ins:
             paratope_labels_selections.append({
                 "struct_asym_id": str(chain_id_orig),
-                "auth_residue_number": int(re.sub(r"\D", "", res_ins)),
-                "auth_ins_code_id": str(re.sub(r"\d", "", res_ins)),
+                "auth_residue_number": int(re.sub(r"[A-Za-z]", "", res_ins)),
+                "auth_ins_code_id": str(re.sub(r"[0-9]", "", res_ins)),
                 "color": {"r": 255, "g": 20, "b": 0},
             })
     return paratope_labels_selections
@@ -637,8 +637,8 @@ def find_paratope_preds(chains, df):
         for res_ins, pred_prob in zip(paratope_preds_res_ins, paratope_preds):
             paratope_preds_selections.append({
                 "struct_asym_id": str(chain_id_orig),
-                "auth_residue_number": int(re.sub(r"\D", "", res_ins)),
-                "auth_ins_code_id": str(re.sub(r"\d", "", res_ins)),
+                "auth_residue_number": int(re.sub(r"[A-Za-z]", "", res_ins)),
+                "auth_ins_code_id": str(re.sub(r"[0-9]", "", res_ins)),
                 "color": value_to_color(pred_prob),
             })
 
@@ -669,8 +669,8 @@ def find_models_diffs(chains, df_model1, df_model2, diff_mode):
         for res_ins, diff in zip(res_inss, diff_models_preds):
             paratope_preds_diffs.append({
                 "struct_asym_id": str(chain_id_orig),
-                "auth_residue_number": int(re.sub(r"\D", "", res_ins)),
-                "auth_ins_code_id": str(re.sub(r"\d", "", res_ins)),
+                "auth_residue_number": int(re.sub(r"[A-Za-z]", "", res_ins)),
+                "auth_ins_code_id": str(re.sub(r"[0-9]", "", res_ins)),
                 "color": value_to_mag_green(diff)
             })
     return paratope_preds_diffs
