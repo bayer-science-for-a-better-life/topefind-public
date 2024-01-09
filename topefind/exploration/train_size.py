@@ -3,7 +3,6 @@
 
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import polars as pl
@@ -21,6 +20,8 @@ from topefind.embedders import (
     PhysicalPropertiesPosEmbedder,
     PhysicalPropertiesPosContextEmbedder
 )
+
+from exploration import *
 
 FILE_PATH = Path(__file__)
 INTERESTED_COLUMNS = [
@@ -218,7 +219,7 @@ if __name__ == '__main__':
         lambda x: NAME_BEAUTIFIER[x + "_rf"] if "pos_freq" not in x else NAME_BEAUTIFIER[x]
     )
 
-    fig, axs = plt.subplots(1, 1, figsize=(5, 5))
+    fig, axs = plt.subplots(1, 1, figsize=(6, 5))
     sns.lineplot(
         df,
         x="fraction",
@@ -229,13 +230,14 @@ if __name__ == '__main__':
         dashes=False,
         ax=axs
     )
-    axs.set_title("")
-    axs.set_xlabel("")
-    axs.set_ylabel("")
-    axs.set_ylim(0.22, 0.8)
-    axs.grid()
-    axs.legend(loc="center right", fontsize="8")
+    axs.set_title("Performance and Training Size", fontsize=FONTSIZE_TITLE)
+    axs.set_xlabel("Fraction of the training set", fontsize=FONTSIZE_LABELS)
+    axs.set_ylabel("AP", fontsize=FONTSIZE_LABELS)
+    axs.set_xlim(0.00, 1.10)
+    axs.set_ylim(0.22, 0.80)
+    # axs.grid()
+    axs.legend(loc="center", fontsize="8")
     sns.despine(ax=axs)
 
     plt.tight_layout()
-    plt.savefig(FILE_PATH.parent / "training_size.svg")
+    plt.savefig(FILE_PATH.parent / "training_size.pdf")
