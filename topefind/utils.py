@@ -9,7 +9,7 @@ import anarci
 import numpy as np
 from sklearn.metrics import (
     matthews_corrcoef,
-    precision_score,
+    average_precision_score,
 )
 from tqdm import tqdm
 
@@ -193,11 +193,17 @@ def rescale(x: np.ndarray):
     return (x - _min) / (_max - _min)
 
 
-def metric_at_top_k(y_true, y_pred, k, metric=precision_score):
+def metric_at_top_k(y_true, y_pred, k, metric=average_precision_score, thr=0.5):
     if k > len(y_true):
         k = len(y_true)
     top_k_ids = np.argpartition(y_pred, -k)[-k:]
-    return metric(y_true[top_k_ids].astype(int), np.ones(len(top_k_ids), dtype=int), zero_division=0)
+    top_k_trues = y_true[top_k_ids].astype(int)
+    top_k_preds = y_pred[top_k_ids]
+    if metric != average_precision_score:
+        top_k_preds = np.where(top_k_preds >= thr, 1, 0)
+        return metric(top_k_trues, top_k_preds, zero_division=0)
+    else:
+        return metric(top_k_trues, top_k_preds)
 
 
 def iou(y_true: np.ndarray, y_pred: np.ndarray):
