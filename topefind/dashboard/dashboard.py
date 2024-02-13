@@ -918,7 +918,7 @@ def dashboard_app():
         How does this work?
 
         - A file `benchmark.pkl.gz` encodes the results on a given dataset. This file is a Pandas DataFrame that
-        contain the results. This can be created with a benchmarker from `topefind.benchmarkers` on a given
+        contains the results. This can be created with a benchmarker from `topefind.benchmarkers` on a given
         train, validation, or test set.
         - There are several .bcif files that are served together, these need to match the structures that correspond to
         the PDB id exposed in the pdb column of `benchmark.pkl.gz`.
