@@ -43,9 +43,9 @@ ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public
 # PDBE_CSS_DARK_PATH = f"{ASSETS_NAME}/pdbe-molstar-3.1.1.css"
 
 # To load from ebi:
-PDBE_JS_PATH = "https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-3.1.1.js"
-PDBE_CSS_PATH = "https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molstar-light-3.1.1.css"
-PDBE_CSS_DARK_PATH = "https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molstar-3.1.1.css"
+PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@latest/build/pdbe-molstar-plugin.js"
+PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@latest/build/pdbe-molstar-light.css"
+PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@latest/build/pdbe-molstar.css"
 
 # When converting to pyodide-worker version remember to reset this path to the one served!
 if PYSCRIPT:
@@ -87,6 +87,7 @@ REGIONS_WIDGET = pn.widgets.Select(name='Region', options=REGIONS)
 PDBS_WIDGET = pn.widgets.Select(name='PDB', options=PDBS)
 DIFFERENCE_MODE_WIDGET = pn.widgets.Select(name='Difference Mode', options=DIFF_MODES)
 PREV_PDB = PDBS[0]
+IS_FIRST_UPDATE = True
 
 PLOTLY_LAYOUT = {
     "paper_bgcolor": "rgba(0,0,0,0)",
@@ -343,9 +344,9 @@ class PDBeMolStar(ReactiveHTML):
     validation_annotation = param.Boolean(default=False, doc="Adds 'annotation' control in the menu")
     domain_annotation = param.Boolean(default=False, doc="Adds 'annotation' control in the menu")
     low_precision_coords = param.Boolean(default=False, doc="Load low precision coordinates from the model server")
-    hide_controls = param.Boolean(default=True, doc="Hide the control menu")
+    hide_controls = param.Boolean(default=False, doc="Hide the control menu")
     sequence_panel = param.Boolean(default=True, doc="Show the sequence panel")
-    expanded = param.Boolean(default=True, doc="""Display full-screen by default on load""")
+    expanded = param.Boolean(default=False, doc="""Display full-screen by default on load""")
     landscape = param.Boolean(default=True, doc="""Set landscape view.""")
     select_interaction = param.Boolean(default=True, doc="Switch on or off the default selection interaction behaviour")
     lighting = param.Selector(
@@ -666,9 +667,9 @@ def get_models_joined_df(model1, model2, chain, metric, region):
     model2 = f"{model2}_y"
 
     on = ["pdb", "chain_type"]
-    selection = ["pdb", "value", "value_right"]
+    selection = ["pdb", "value", "value_right", "chain_type"]
     df = pd.merge(model1_res, model2_res, on=on, suffixes=("", "_right"), how="inner")[selection]
-    df.columns = ["pdb", model1, model2]
+    df.columns = ["pdb", model1, model2, "chain_type"]
     return df, model1, model2
 
 
@@ -678,9 +679,12 @@ def get_models_joined_df(model1, model2, chain, metric, region):
     CHAINS_WIDGET.param.value,
     METRICS_WIDGET.param.value,
     REGIONS_WIDGET.param.value,
+    PDBS_WIDGET.param.value,
 )
-def scatter_plot(model1, model2, chain, metric, region):
+def scatter_plot(model1, model2, chain, metric, region, pdb_id):
     global SCATTER_PLOT_PANEL
+    global IS_FIRST_UPDATE
+
     df, model1, model2 = get_models_joined_df(model1, model2, chain, metric, region)
 
     corr_coef = np.corrcoef(
@@ -688,10 +692,17 @@ def scatter_plot(model1, model2, chain, metric, region):
         df[model2].to_numpy().flatten()
     )[0, 1]
 
-    hover_data = [df[model1], df[model2], df["pdb"]]
+    if IS_FIRST_UPDATE:
+        df["Selection"] = np.where(df["pdb"] == "INVALID_PDB_ID", "Yes", "No")
+        IS_FIRST_UPDATE = False
+    else:
+        df["Selection"] = np.where(df["pdb"] == pdb_id, "Yes", "No")
+
+    hover_data = [df[model1], df[model2], df["pdb"], df["chain_type"]]
     plot_title = f"{metric.upper()} -- Pearson Corr: {corr_coef:.2F}"
 
-    sp = px.scatter(df, x=model1, y=model2, hover_data=hover_data)
+    sp = px.scatter(df, x=model1, y=model2, color="Selection", hover_data=hover_data)
+
     sp.update_layout(title_text=plot_title)
     sp.update_yaxes(range=[-0.1, 1.1])
     sp.update_xaxes(range=[-0.1, 1.1])
