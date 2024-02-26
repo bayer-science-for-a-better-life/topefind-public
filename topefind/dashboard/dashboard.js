@@ -61,7 +61,7 @@ Set the global PYSCRIPT to True before the conversion.
 If you want to use pyodide-worker remember to change the generated .js with the correct URLs to the data
 you want to provide which has to be served on some service.
 
-You can easily serve everything locally as well when running from pyodide-worker by starting a http server:
+You can easily serve everything locally as well when running from pyodide-worker by starting a http server:x
 \`\`\` python3 -m http.server \`\`\` and then opening the dashboard.html in a browser.
 
 Please check: https://panel.holoviz.org/how_to/wasm/convert.html for more details.
@@ -102,7 +102,6 @@ if PYSCRIPT:
 else:
     MODEL_COMP_PATH = "benchmark.pkl.gz"
 
-
 DF = pd.read_pickle(MODEL_COMP_PATH)
 NON_SELECTED_COLOR = {"r": 155, "g": 155, "b": 155}
 AG_COLOR = {"r": 10, "g": 200, "b": 0}
@@ -111,8 +110,8 @@ NORMAL_ROW_MAX_HEIGHT = 500
 MODELS = DF["model"].unique().tolist()
 PDBS = DF["pdb"].unique().tolist()
 METRICS = DF["metric"].unique().tolist()
-METRICS.remove("bal_acc")
-METRICS.insert(0, "bal_acc")
+METRICS.remove("ap")
+METRICS.insert(0, "ap")
 REGIONS = DF["region"].unique().tolist()
 CHAINS = ["both", "heavy", "light"]
 DIFF_MODES = ["abs_norm_diff"]
@@ -126,9 +125,9 @@ MODELS_Y = copy.deepcopy(MODELS)
 MODELS_Y.remove("imgt_aa_ctx_23_rf")
 MODELS_Y.insert(0, "imgt_aa_ctx_23_rf")
 
-PDBE_MOLSTAR = ReactiveHTML()
-SCATTER_PLOT_PANEL = pn.pane.Plotly()
-VIOLIN_PLOT_PANEL = pn.pane.Plotly()
+PDBE_MOLSTAR = ReactiveHTML(sizing_mode="stretch_both", height=NORMAL_ROW_MAX_HEIGHT)
+SCATTER_PLOT_PANEL = pn.pane.Plotly(sizing_mode="stretch_width")
+VIOLIN_PLOT_PANEL = pn.pane.Plotly(sizing_mode="stretch_width")
 MODELS_X_WIDGET = pn.widgets.Select(name='Model on x axis', options=MODELS_X)
 MODELS_Y_WIDGET = pn.widgets.Select(name='Model on y axis', options=MODELS_Y)
 CHAINS_WIDGET = pn.widgets.Select(name='Chain', options=CHAINS)
@@ -357,10 +356,10 @@ class PDBeMolStar(ReactiveHTML):
 
     custom_data = param.Dict(
         doc="""Load data from a specific data source. Example:
-        {
-            "url": "https://www.ebi.ac.uk/pdbe/coordinates/1cbs/chains?entityId=1&asymId=A&encoding=bcif",
-            "format": "cif",
-            "binary": True
+        { 
+            "url": "https://www.ebi.ac.uk/pdbe/coordinates/1cbs/chains?entityId=1&asymId=A&encoding=bcif", 
+            "format": "cif", 
+            "binary": True 
         }
         """
     )
@@ -593,6 +592,8 @@ def value_to_color(x, normalized=False, cmap_func=cm.Reds):
 
 
 def normalize(x: np.ndarray):
+    if np.allclose(x, 0):
+        return x
     _min = np.min(x)
     _max = np.max(x)
     return (x - _min) / (_max - _min)
@@ -1010,13 +1011,17 @@ def dashboard_app():
     )
     abstract = pn.pane.Markdown(dashboard_app.__doc__, sizing_mode="stretch_width")
 
-    first_row_title = pn.pane.Markdown("#### Model comparisons", sizing_mode="stretch_width")
-    first_row = pn.Row(regions_plot, radar_plot, sizing_mode="stretch_both")
+    # Additional first row for the regions plot and radar plot.
+    # first_row_title = pn.pane.Markdown("#### Model comparisons", sizing_mode="stretch_width")
+    # first_row = pn.Row(regions_plot, radar_plot, sizing_mode="stretch_both")
 
-    second_row_title = pn.pane.Markdown("#### Comparison w.r.t selected metric", sizing_mode="stretch_width")
-    second_row = pn.Row(scatter_plot, violin_plot, sizing_mode="stretch_both")
+    second_row_title = pn.pane.Markdown("""
+        #### Models' comparisons  
+        Click on a point to see it in the structure viewer
+        """, sizing_mode="stretch_both")
+    second_row = pn.Row(scatter_plot, violin_plot, sizing_mode="stretch_width")
 
-    third_row_title = pn.pane.Markdown("#### Comparisons directly on the structure", sizing_mode="stretch_width")
+    third_row_title = pn.pane.Markdown("#### Comparisons on the structure", sizing_mode="stretch_width")
     third_row = pn.Tabs(
         ("Overlapped", protein_viewer_overlap),
         ("Separate Views", pn.Row(protein_viewer_x, protein_viewer_y, sizing_mode="stretch_width")),
@@ -1042,13 +1047,14 @@ def dashboard_app():
             background="WhiteSmoke",
             sizing_mode="stretch_both",
         ),
-        pn.layout.Divider(),
-        pn.Card(
-            first_row,
-            header=first_row_title,
-            background="WhiteSmoke",
-            sizing_mode="stretch_both",
-        ),
+        # Uncomment to add the additional first row for more visualizations.
+        # pn.layout.Divider(),
+        # pn.Card(
+        #     first_row,
+        #     header=first_row_title,
+        #     background="WhiteSmoke",
+        #     sizing_mode="stretch_both",
+        # ),
         pn.layout.Divider(),
         pn.Card(
             second_row,

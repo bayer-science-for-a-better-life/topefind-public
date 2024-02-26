@@ -4,8 +4,6 @@
 [![License](https://img.shields.io/badge/License-BSD_3--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Dashboard](https://img.shields.io/badge/Panel-Dashboard-green)](https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard/dashboard.html)
 
-⚠️ This is a temporary public version ⚠️
-
 Antibodies are particular Y-shaped proteins. They are one of the most essential
 parts of the adaptive immune system since they interact with antigens. Being
 able to engineer antibodies can significantly impact the development of therapeutics,
@@ -141,20 +139,18 @@ https://github.com/bayer-science-for-a-better-life/topefind-public/assets/280554
 
 <div align="center">
 
-|            | **Model**           | AP                                  | ROC AUC                             | P@5                                 | P@10                                |
-|------------|---------------------|-------------------------------------|-------------------------------------|-------------------------------------|-------------------------------------|
-| Baselines  | SEQ2CDR             | 0.30<sub><sup>±0.13</sup></sub>     | 0.87<sub><sup>±0.10</sup></sub>     | 0.37<sub><sup>±0.26</sup></sub>     | 0.33<sub><sup>±0.18</sup></sub>     |
-|            | AF2M                | 0.31<sub><sup>±0.20</sup></sub>     | 0.81<sub><sup>±0.13</sup></sub>     | 0.39<sub><sup>±0.29</sup></sub>     | 0.38<sub><sup>±0.25</sup></sub>     |
-|            | Paragraph Untrained | 0.27<sub><sup>±0.12</sup></sub>     | 0.89<sub><sup>±0.07</sup></sub>     | 0.24<sub><sup>±0.20</sup></sub>     | 0.25<sub><sup>±0.17</sup></sub>     |
-| End-to-end | Parapred            | 0.67<sub><sup>±0.23</sup></sub>     | 0.95<sub><sup>±0.06</sup></sub>     | 0.49<sub><sup>±0.28</sup></sub>     | 0.49<sub><sup>±0.23</sup></sub>     |
-|            | Paragraph Unpaired  | 0.74<sub><sup>±0.22</sup></sub>     | 0.95<sub><sup>±0.08</sup></sub>     | 0.58<sub><sup>±0.28</sup></sub>     | **0.57**<sub><sup>±0.23</sup></sub> |
-| SSL + RF   | ESM2 8M             | 0.72<sub><sup>±0.21</sup></sub>     | **0.98**<sub><sup>±0.03</sup></sub> | 0.66<sub><sup>±0.28</sup></sub>     | 0.47<sub><sup>±0.23</sup></sub>     |
-|            | ESM2 150M           | 0.74<sub><sup>±0.21</sup></sub>     | **0.98**<sub><sup>±0.02</sup></sub> | 0.69<sub><sup>±0.29</sup></sub>     | 0.54<sub><sup>±0.25</sup></sub>     |
-|            | ESM2 650M           | **0.75**<sub><sup>±0.21</sup></sub> | **0.98**<sub><sup>±0.03</sup></sub> | 0.69<sub><sup>±0.29</sup></sub>     | 0.55<sub><sup>±0.26</sup></sub>     |
-|            | ESM2 3B             | 0.74<sub><sup>±0.22</sup></sub>     | **0.98**<sub><sup>±0.03</sup></sub> | 0.69<sub><sup>±0.28</sup></sub>     | 0.54<sub><sup>±0.25</sup></sub>     |
-|            | ESM1b               | **0.75**<sub><sup>±0.21</sup></sub> | **0.98**<sub><sup>±0.03</sup></sub> | **0.70**<sub><sup>±0.28</sup></sub> | 0.55<sub><sup>±0.25</sup></sub>     |
-|            | ProtT5 XL           | **0.75**<sub><sup>±0.21</sup></sub> | **0.98**<sub><sup>±0.03</sup></sub> | **0.70**<sub><sup>±0.28</sup></sub> | **0.57**<sub><sup>±0.25</sup></sub> |
-|            | RITA XL             | 0.70<sub><sup>±0.22</sup></sub>     | 0.97<sub><sup>±0.04</sup></sub>     | 0.65<sub><sup>±0.29</sup></sub>     | 0.46<sub><sup>±0.24</sup></sub>     |
+|            | **Model**          | AP (Mean ± Std)                     | AP@5   (Mean ± Std)                 | AP@10 (Mean ± Std)                  |
+|------------|--------------------|-------------------------------------|-------------------------------------|-------------------------------------|
+| Baselines  | AF2M               | 0.32<sub><sup>±0.19</sup></sub>     | 0.41<sub><sup>±0.29</sup></sub>     | 0.40<sub><sup>±0.24</sup></sub>     |
+|            | PosFreq            | 0.65<sub><sup>±0.21</sup></sub>     | 0.37<sub><sup>±0.26</sup></sub>     | 0.33<sub><sup>±0.18</sup></sub>     |
+| End-to-end | Parapred           | 0.69<sub><sup>±0.22</sup></sub>     | 0.82<sub><sup>±0.27</sup></sub>     | 0.78<sub><sup>±0.24</sup></sub>     |
+|            | Paragraph Unpaired | 0.74<sub><sup>±0.22</sup></sub>     | **0.87**<sub><sup>±0.25</sup></sub> | **0.83**<sub><sup>±0.23</sup></sub> |
+| LM + RF    | ESM2 8M + RF       | 0.73<sub><sup>±0.21</sup></sub>     | 0.85<sub><sup>±0.25</sup></sub>     | 0.80<sub><sup>±0.23</sup></sub>     |
+|            | ESM2 35M + RF      | 0.74<sub><sup>±0.21</sup></sub>     | 0.85<sub><sup>±0.25</sup></sub>     | 0.81<sub><sup>±0.23</sup></sub>     |
+|            | ESM2 150M+ RF      | 0.74<sub><sup>±0.21</sup></sub>     | 0.84<sub><sup>±0.26</sup></sub>     | 0.81<sub><sup>±0.23</sup></sub>     |
+|            | ESM2 650M + RF     | **0.75**<sub><sup>±0.21</sup></sub> | 0.85<sub><sup>±0.25</sup></sub>     | 0.81<sub><sup>±0.23</sup></sub>     |
+|            | ProtT5 XL + RF     | **0.75**<sub><sup>±0.21</sup></sub> | 0.86<sub><sup>±0.25</sup></sub>     | 0.81<sub><sup>±0.23</sup></sub>     |
+|            | RITA XL + RF       | 0.70<sub><sup>±0.22</sup></sub>     | 0.82<sub><sup>±0.26</sup></sub>     | 0.78<sub><sup>±0.24</sup></sub>     |
 
 </div>
 
@@ -166,15 +162,17 @@ https://github.com/bayer-science-for-a-better-life/topefind-public/assets/280554
 
 <div align="center">
 
-|                      | **Model**    | AP                              | ROC AUC                         | P@5                             | P@10                            |
-|----------------------|--------------|---------------------------------|---------------------------------|---------------------------------|---------------------------------|
-| Simple Features + RF | AA           | 0.15<sub><sup>±0.07</sup></sub> | 0.72<sub><sup>±0.11</sup></sub> | 0.02<sub><sup>±0.09</sup></sub> | 0.02<sub><sup>±0.06</sup></sub> |
-|                      | Pos          | 0.63<sub><sup>±0.21</sup></sub> | 0.97<sub><sup>±0.04</sup></sub> | 0.60<sub><sup>±0.28</sup></sub> | 0.44<sub><sup>±0.22</sup></sub> |
-|                      | AA+Pos       | 0.70<sub><sup>±0.21</sup></sub> | 0.97<sub><sup>±0.04</sup></sub> | 0.65<sub><sup>±0.27</sup></sub> | 0.51<sub><sup>±0.24</sup></sub> |
-|                      | AA+Pos+3CTX  | 0.71<sub><sup>±0.21</sup></sub> | 0.97<sub><sup>±0.04</sup></sub> | 0.66<sub><sup>±0.28</sup></sub> | 0.53<sub><sup>±0.24</sup></sub> |
-|                      | AA+Pos+5CTX  | 0.72<sub><sup>±0.22</sup></sub> | 0.97<sub><sup>±0.05</sup></sub> | 0.68<sub><sup>±0.28</sup></sub> | 0.56<sub><sup>±0.24</sup></sub> |
-|                      | AA+Pos+7CTX  | 0.72<sub><sup>±0.21</sup></sub> | 0.97<sub><sup>±0.05</sup></sub> | 0.67<sub><sup>±0.28</sup></sub> | 0.56<sub><sup>±0.24</sup></sub> |
-|                      | AA+Pos+11CTX | 0.73<sub><sup>±0.22</sup></sub> | 0.97<sub><sup>±0.05</sup></sub> | 0.68<sub><sup>±0.28</sup></sub> | 0.56<sub><sup>±0.25</sup></sub> |
+|                             | **Model**             | AP (Mean ± Std)                  | AP@5   (Mean ± Std)              | AP@10 (Mean ± Std)              |
+|-----------------------------|-----------------------|----------------------------------|----------------------------------|---------------------------------|
+| Interpretable Features + RF | AA + RF               | 0.24<sub><sup>±0.10</sup></sub>  | 0.34<sub><sup>±0.24</sup></sub>  | 0.35<sub><sup>±0.17</sup></sub> |
+|                             | Pos + RF              | 0.65<sub><sup>±0.21</sup></sub>  | 0.78<sub><sup>±0.27</sup></sub>  | 0.73<sub><sup>±0.24</sup></sub> |
+|                             | AA + Pos + RF         | 0.71<sub><sup>±0.21</sup></sub>  | 0.83<sub><sup>±0.25</sup></sub>  | 0.79<sub><sup>±0.22</sup></sub> |
+|                             | AA + Pos + 3CTX + RF  | 0.72<sub><sup>±0.21</sup></sub>  | 0.84<sub><sup>±0.24</sup></sub>  | 0.80<sub><sup>±0.22</sup></sub> |
+|                             | AA + Pos + 5CTX + RF  | 0.72<sub><sup>±0.21</sup></sub>  | 0.84<sub><sup>±0.25</sup></sub>  | 0.80<sub><sup>±0.23</sup></sub> |
+|                             | AA + Pos + 7CTX + RF  | 0.73<sub><sup>±0.21</sup></sub>  | 0.84<sub><sup>±0.25</sup></sub>  | 0.80<sub><sup>±0.23</sup></sub> |
+|                             | AA + Pos + 11CTX + RF | 0.73<sub><sup>±0.22</sup></sub>  | 0.85<sub><sup>±0.24</sup></sub>  | 0.81<sub><sup>±0.23</sup></sub> |
+|                             | AA + Pos + 17CTX + RF | 0.74<sub><sup>±0.21</sup></sub>  | 0.85<sub><sup>±0.24</sup></sub>  | 0.81<sub><sup>±0.23</sup></sub> |
+|                             | AA + Pos + 23CTX + RF | 0.74<sub><sup>±0.21</sup></sub>  | 0.85<sub><sup>±0.25</sup></sub>  | 0.81<sub><sup>±0.23</sup></sub> |
 
 </div>
 

@@ -34,7 +34,7 @@ dependencies:
 
   # Bioinformatics
   - biotite
-  # Do not update this until this ANARCI bug is fixed:
+  # Do not update ANARCI until this bug is fixed:
   # https://github.com/oxpig/ANARCI/issues/17
   - anarci==2020.04.23
 

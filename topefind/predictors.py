@@ -479,15 +479,12 @@ class PLMSKClassifier(Predictor):
         pdbs = dataset.get_column("pdb").to_list()
         ab_seqs = dataset.get_column("antibody_sequence").to_list()
         ag_seqs = dataset.get_column("antigen_sequence").to_list()
-        chain_types = dataset.get_column("chain_type").to_list()
         labels = dataset.get_column("full_paratope_labels").to_list()
 
-        if "ag_aware" in self.name or "paired" in self.name:
-            second_seqs = ab_seqs if "paired" in self.name else ag_seqs
-            for pdb_i, main_seq, c_type_i in zip(pdbs, ab_seqs, chain_types):
-                for pdb_j, context_seq, c_type_j in zip(pdbs, second_seqs, chain_types):
-                    if pdb_i == pdb_j and c_type_i != c_type_j:
-                        inputs.append(tuple([main_seq, context_seq]))
+        if "ag_aware" in self.name:
+            for pdb, ab_seq, ag_seq in zip(pdbs, ab_seqs, ag_seqs):
+                inputs.append(tuple([ab_seq, ag_seq]))
+        # TODO: implement paired
         else:
             inputs = ab_seqs
         return inputs, labels

@@ -92,22 +92,6 @@ REGIONS_IMGT = {
 
 TOP_KS = (3, 5, 10, 15)
 
-METRICS_NAMES = [
-    "ap",
-    "roc_auc",
-    "mcc",
-    "iou",
-    "precision",
-    "recall",
-    "f1",
-    "bal_acc",
-    "aiou",
-    "prec@3",
-    "prec@5",
-    "prec@10",
-    "prec@15",
-]
-
 AB_REGIONS = [
     "all",
     "CDR1",
@@ -225,21 +209,29 @@ def amcc(y_true: np.ndarray, y_pred: np.ndarray, n_thr=50):
     return np.mean([matthews_corrcoef(y_true, np.where(y_pred < thr, 0, 1)) for thr in thrs])
 
 
-def find_free_device() -> str:
+def get_device(mode: str = "auto") -> str:
+    """
+    Gets the device to use for the computations.
+    :param mode: the mode to use for the computations. Can be "auto", "cpu", "cuda" or "mps".
+    :return: device to use for the computations.
+    """
+    if mode != "auto":
+        return mode
     if torch.cuda.is_available():
         os.system("nvidia-smi -q -d Memory | grep -A4 GPU | grep Free > devices")
         with open("devices", "r") as file:
             memory = [int(x.split()[2]) for x in file.readlines()]
-        device = f"cuda:{int(np.argmax(memory))}"
+        if len(memory) > 1:
+            device = f"cuda:{int(np.argmax(memory))}"
+        else:
+            device = "cuda"
         os.remove("devices")
+    elif torch.backends.mps.is_available():
+        device = "mps"
     else:
         device = "cpu"
     print(f"Using {device} device")
     return device
-
-
-def get_device(mode: str = "auto") -> str:
-    return find_free_device() if mode == "auto" else mode
 
 
 def pad_to_imgt(

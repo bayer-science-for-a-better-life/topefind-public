@@ -81,10 +81,8 @@ METRICS = [
     "recall",
     "f1",
     "bal_acc",
-    "p@3",
-    "p@5",
-    "p@10",
-    "p@15",
+    "ap@5",
+    "ap@10",
 ]
 
 ACCEPTABLE_MODELS = [
@@ -270,7 +268,7 @@ class ParagraphBenchmark:
                 return f1_score(yt, yp_bin)
             elif metric == "bal_acc":
                 return balanced_accuracy_score(yt, yp_bin)
-            elif "p@" in metric:
+            elif "ap@" in metric:
                 return metric_at_top_k(yt, yp_bin, k=int(metric.split("@")[-1]))
             else:
                 raise NotImplementedError(f"The following metric is not implemented: {metric}")

@@ -30,8 +30,8 @@ dependencies = [
 "Bug Tracker" = "https://github.com/bayer-science-for-a-better-life/topefind-public/issues"
 "Source" = "https://github.com/bayer-science-for-a-better-life/topefind-public"
 
-[tool.setuptools.packages.find]
-where = ["topefind"]
+[tool.setuptools.packages]
+find = { namespaces = false }
 
 [tool.ruff]
 # Enable the pycodestyle (`E`) and Pyflakes (`F`) rules by default.
