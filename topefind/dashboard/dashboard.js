@@ -49,9 +49,9 @@ init_doc()
 
 """
 Dashboard to visualize results and see comparisons between models.
+
 This script currently does not envision any normal programming pattern, uses a large number of globals, and it will need
 some optimization if used in a highly business critical perspective. Please use at your own risk and revise it priorly.
-
 
 This script modality applies to both serving the components through panel itself and to
 the ability to convert it with panel into a pyodide, pyodide-worker, or pyscript app.
@@ -92,9 +92,9 @@ ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public
 # PDBE_CSS_DARK_PATH = f"{ASSETS_NAME}/pdbe-molstar-3.1.1.css"
 
 # To load from ebi:
-PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@latest/build/pdbe-molstar-plugin.js"
-PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@latest/build/pdbe-molstar-light.css"
-PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@latest/build/pdbe-molstar.css"
+PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-plugin-3.1.2.js"
+PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-light-3.1.2.css"
+PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-3.1.2.css"
 
 # When converting to pyodide-worker version remember to reset this path to the one served!
 if PYSCRIPT:
@@ -697,6 +697,8 @@ def load_pdbemolstar_pdb_pdb(pdb_id):
     file_url = f"{ASSETS_NAME}/{pdb_id}.{STRUCTURE_EXT}"
     custom_data = {"url": file_url, "format": "cif", "binary": True}
     PDBE_MOLSTAR.param.update({"custom_data": custom_data})
+    PDBE_MOLSTAR.param.update({"hide_controls": True})
+    PDBE_MOLSTAR.param.update({"hide_controls": False})
     return PDBE_MOLSTAR
 
 
