@@ -44,7 +44,7 @@ dependencies:
   - seaborn
   - plotly
   - python-kaleido
-  - panel<=0.14.4
+  - panel
 
   - pip:
       - "-e ."

@@ -32,6 +32,8 @@ from panel.reactive import ReactiveHTML
 
 # Globals
 PYSCRIPT = True
+BAYER_GREEN = "#7AD23F"
+BAYER_BLUE = "#55BBF9"
 
 STRUCTURE_EXT = "bcif"
 ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public/topefind/dashboard" if PYSCRIPT else "assets"
@@ -42,10 +44,13 @@ ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public
 # PDBE_CSS_PATH = f"{ASSETS_NAME}/pdbe-molstar-light-3.1.2.css"
 # PDBE_CSS_DARK_PATH = f"{ASSETS_NAME}/pdbe-molstar-3.1.2.css"
 
-# To load from ebi:
-PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-plugin-3.1.2.js"
-PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-light-3.1.2.css"
-PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-3.1.2.css"
+# To load from cdn:
+# PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-plugin-3.1.2.js"
+# PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-light-3.1.2.css"
+# PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-3.1.2.css"
+PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar-plugin.js"
+PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar-light.css"
+PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar.css"
 
 # When converting to pyodide-worker version remember to reset this path to the one served!
 if PYSCRIPT:
@@ -823,28 +828,28 @@ def regions_plot(model1, model2, chain, metric):
     fig.update_yaxes(PLOTLY_AXES_STYLE)
     return pn.pane.Plotly(fig)
 
-
-@pn.depends(
-    MODELS_X_WIDGET.param.value,
-    MODELS_Y_WIDGET.param.value,
-    CHAINS_WIDGET.param.value,
-    METRICS_WIDGET.param.value,
-    REGIONS_WIDGET.param.value,
-)
-def mean_std_models(model1, model2, chain, metric, region):
-    df, model1, model2 = get_models_joined_df(model1, model2, chain, metric, region)
-    model1_mean = df[model1].mean()
-    model2_mean = df[model2].mean()
-    model1_std = df[model1].std()
-    model2_std = df[model2].std()
-
-    mean_std_model1 = f"{model1_mean:.2F} ± {model1_std:.2F}"
-    mean_std_model2 = f"{model2_mean:.2F} ± {model2_std:.2F}"
-    df = pd.DataFrame({
-        "Selected models": [model1, model2],
-        f"{metric.upper()} Mean ± Std": [mean_std_model1, mean_std_model2],
-    })
-    return pn.widgets.DataFrame(df, autosize_mode='fit_viewport', show_index=False)
+#
+# @pn.depends(
+#     MODELS_X_WIDGET.param.value,
+#     MODELS_Y_WIDGET.param.value,
+#     CHAINS_WIDGET.param.value,
+#     METRICS_WIDGET.param.value,
+#     REGIONS_WIDGET.param.value,
+# )
+# def mean_std_models(model1, model2, chain, metric, region):
+#     df, model1, model2 = get_models_joined_df(model1, model2, chain, metric, region)
+#     model1_mean = df[model1].mean()
+#     model2_mean = df[model2].mean()
+#     model1_std = df[model1].std()
+#     model2_std = df[model2].std()
+#
+#     mean_std_model1 = f"{model1_mean:.2F} ± {model1_std:.2F}"
+#     mean_std_model2 = f"{model2_mean:.2F} ± {model2_std:.2F}"
+#     df = pd.DataFrame({
+#         "Selected models": [model1, model2],
+#         f"{metric.upper()} Mean ± Std": [mean_std_model1, mean_std_model2],
+#     })
+#     return pn.widgets.DataFrame(df, autosize_mode='fit_viewport', show_index=False)
 
 
 # Updating the protein viewer for overlapped capabilities.
@@ -1008,7 +1013,7 @@ def dashboard_app():
         pn.Card(
             abstract,
             header=abstract_title,
-            background="WhiteSmoke",
+            styles=dict(background='WhiteSmoke'),
             sizing_mode="stretch_both",
         ),
         # Uncomment to add the additional first row for more visualizations.
@@ -1016,21 +1021,21 @@ def dashboard_app():
         # pn.Card(
         #     first_row,
         #     header=first_row_title,
-        #     background="WhiteSmoke",
+        #     styles=dict(background='WhiteSmoke'),
         #     sizing_mode="stretch_both",
         # ),
         pn.layout.Divider(),
         pn.Card(
             second_row,
             header=second_row_title,
-            background="WhiteSmoke",
+            styles=dict(background='WhiteSmoke'),
             sizing_mode="stretch_both",
         ),
         pn.layout.Divider(),
         pn.Card(
             third_row,
             header=third_row_title,
-            background="WhiteSmoke",
+            styles=dict(background='WhiteSmoke'),
             sizing_mode="stretch_both",
         ),
         pn.layout.Divider(),
@@ -1048,9 +1053,9 @@ def dashboard_app():
             REGIONS_WIDGET,
             PDBS_WIDGET,
             DIFFERENCE_MODE_WIDGET,
-            pn.layout.Divider(),
-            pn.pane.Markdown("Here is a summary with the given config:"),
-            mean_std_models,
+            # pn.layout.Divider(),
+            # pn.pane.Markdown("Here is a summary with the given config:"),
+            # mean_std_models,
             sizing_mode="stretch_both"
         )
     ]
@@ -1060,8 +1065,8 @@ def dashboard_app():
         title="Topefind - Dashboard",
         main=main,
         sidebar=sidebar,
-        sidebar_width=280,
-        favicon=f"{ASSETS_NAME}/logo_only.ico"
+        # sidebar_width=280,
+        favicon=f"{ASSETS_NAME}/logo_only.ico",
     )
     # Serving or scripting everything
     if PYSCRIPT:
