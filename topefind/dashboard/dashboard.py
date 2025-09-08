@@ -30,6 +30,8 @@ import plotly.express as px
 import plotly.graph_objects as go
 from panel.reactive import ReactiveHTML
 
+np.bool8 = np.bool
+
 # Globals
 PYSCRIPT = True
 BAYER_GREEN = "#7AD23F"
@@ -44,13 +46,15 @@ ASSETS_NAME = "https://bayer-science-for-a-better-life.github.io/topefind-public
 # PDBE_CSS_PATH = f"{ASSETS_NAME}/pdbe-molstar-light-3.1.2.css"
 # PDBE_CSS_DARK_PATH = f"{ASSETS_NAME}/pdbe-molstar-3.1.2.css"
 
-# To load from cdn:
-# PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-plugin-3.1.2.js"
-# PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-light-3.1.2.css"
-# PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar/build/pdbe-molstar-3.1.2.css"
-PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar-plugin.js"
-PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar-light.css"
-PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar.css"
+# To load from cdn (older tested version):
+PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.1.2/build/pdbe-molstar-plugin-3.1.2.js"
+PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.1.2/build/pdbe-molstar-light-3.1.2.css"
+PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.1.2/build/pdbe-molstar-3.1.2.css"
+
+# For latest versions: (however compatibility is not guaranteed)
+# PDBE_JS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar-plugin.js"
+# PDBE_CSS_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar-light.css"
+# PDBE_CSS_DARK_PATH = "https://cdn.jsdelivr.net/npm/pdbe-molstar@3.7.0/build/pdbe-molstar.css"
 
 # When converting to pyodide-worker version remember to reset this path to the one served!
 if PYSCRIPT:
